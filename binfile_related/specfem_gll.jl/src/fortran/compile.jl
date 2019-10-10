@@ -6,6 +6,6 @@ file_dir = splitdir(file_path)[1]
 
 for file in files
     fname = join(split(file, ".")[1:end - 1], ".")
-    command = `$(FF) -fPIC -shared $(file_dir)/src/$(fname).f90 -o ./lib/$(fname).so`
+    command = `$(FF) -fPIC -shared $(file_dir)/src/$(fname).f90 -o $(file_dir)/lib/$(fname).so`
     run(command)
 end
