@@ -6,7 +6,7 @@ This directory contains all the scripts and programs related to the bin files ge
 
 ## Environment setting
 
-1. Download Julia and Julia packages. From the [download page](interp-17bfee0d8bbe6595bc8501fc9a33fa7b3b2b26b2-2019-09-15.4333611.err), download the appropriate version and platform of Julia. Recommend to download v1.0.5. Unzip the downloaded file and put the bin directory to your system PATH. Type `julia` in the command line, enter the REPL, input `] add <package>`. Users should replace `<package>` with `PyCall`, `NearestNeighbors`, `ArgParse`, `FortranFiles`, `Geodesics`, `MPI` to install all the packages. (Download `PyCall` package may use the conda environment installed, refer to https://github.com/JuliaPy/PyCall.jl for details.)
+1. Download Julia and Julia packages. From the [download page](https://julialang.org/downloads/), download the appropriate version and platform of Julia. Recommend to download v1.0.5. Unzip the downloaded file and put the bin directory to your system PATH. Type `julia` in the command line, enter the REPL, input `] add <package>`. Users should replace `<package>` with `PyCall`, `NearestNeighbors`, `ArgParse`, `FortranFiles`, `Geodesics`, `MPI` to install all the packages. (Download `PyCall` package may use the conda environment installed, refer to https://github.com/JuliaPy/PyCall.jl for details.)
 
 2. compile the associated fortran files. This fortran files is directly copyed from the Specfem3D globe source code to make life easier. execute binfile_related/specfem_gll.jl/src/fortran/compile.jl with julia: `julia compile.jl`.
 
