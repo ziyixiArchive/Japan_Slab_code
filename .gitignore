@@ -1,2 +1,3 @@
 data/*
 *.so
+*.DS_Store
