@@ -1,5 +1,5 @@
-include("../specfem_gll.jl/src/utils/readfiles.jl")
-include("../specfem_gll.jl/src/setting/constants.jl")
+include("../../specfem_gll.jl/src/utils/readfiles.jl")
+include("../../specfem_gll.jl/src/setting/constants.jl")
 
 """
 generate perturbation file according to the reference bin file
