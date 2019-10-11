@@ -115,6 +115,8 @@ function run_interp(command_args::Dict{String,Any}, comm::MPI.Comm)
     misloc_final .= HUGEVAL
 
     model_interp_this_rank = zeros(nmodel, ngll_new_this_rank)
+    # make model_interp_this_rank as -1 to remove the poitns that hasn't been interpolated
+    model_interp_this_rank .= -1
 
     # * loop each slices of the old mesh
     flag = true
