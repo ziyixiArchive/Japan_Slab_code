@@ -14,11 +14,11 @@ nproc = 24
 PY = "/work/05880/tg851791/stampede2/anaconda3/envs/asdf/bin/python"
 min_periods = "10,20,40"
 max_periods = "120,120,120"
-waveform_length = 2340
+waveform_length = 1800
 sampling_rate = 10
-logfile = "/scratch/05880/tg851791/relocation/work/process_sync.log"
-RAW_DIR = "/scratch/05880/tg851791/relocation/work/asdf"
-PROCESSED_DIR = "/scratch/05880/tg851791/relocation/work/asdf_processed"
+logfile = "/scratch/05880/tg851791/asdf_sync/process_sync.log"
+RAW_DIR = "/scratch/05880/tg851791/asdf_sync/asdf"
+PROCESSED_DIR = "/scratch/05880/tg851791/asdf_sync/asdf_processed"
 
 
 def get_files(base_dir):
@@ -39,7 +39,7 @@ def get_scripts(run_files):
                 continue
             filename = run_files[ievent]
             inc = ieach*nproc
-            result += f"ibrun -n {nproc} -o {inc} {PY} ../process/process_sync.py --min_periods {min_periods} --max_periods {max_periods} --asdf_filename {filename} --waveform_length {waveform_length} --sampling_rate {sampling_rate} --output_directory {PROCESSED_DIR} --logfile {logfile} &"
+            result += f"ibrun -n {nproc} -o {inc} {PY} ./process_sync.py --min_periods {min_periods} --max_periods {max_periods} --asdf_filename {filename} --waveform_length {waveform_length} --sampling_rate {sampling_rate} --output_directory {PROCESSED_DIR} --logfile {logfile} &"
         result += f"wait; "
         result += f"echo 'end iteration {iiter}'; "
 

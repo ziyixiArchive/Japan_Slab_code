@@ -100,7 +100,7 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
         tag_name = "preprocessed_%is_to_%is" % (
             int(min_period), int(max_period))
         tag_map = {
-            "sync": tag_name
+            "synthetic": tag_name
         }
 
         output_name_head = asdf_filename.split("/")[-1].split(".")[0]
