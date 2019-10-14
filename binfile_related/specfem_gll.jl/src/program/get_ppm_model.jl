@@ -18,8 +18,8 @@ function generate_profile_points(latnpts, lonnpts, vnpts, lon1, lat1, dep1, lon2
     # get ranges for the three directions
     rank_lat = rank % latproc + 1
     rank_lon = div(rank, latproc) + 1
-    coor_lat = np[:array_split](1:latnpts, latproc)[rank_lat]
-    coor_lon = np[:array_split](1:lonnpts, lonproc)[rank_lon]
+    coor_lat = np.array_split(1:latnpts, latproc)[rank_lat]
+    coor_lon = np.array_split(1:lonnpts, lonproc)[rank_lon]
 
     # init rθϕ_new
     ngll_new_this_rank = length(coor_lat) * length(coor_lon) * vnpts

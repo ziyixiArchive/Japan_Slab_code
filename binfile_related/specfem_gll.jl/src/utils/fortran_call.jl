@@ -1,6 +1,3 @@
-const file_path = Base.source_path()
-const file_dir = splitdir(file_path)[1]
-
 # gll_library
 function zwgljd!(z::Vector{Float64}, w::Vector{Float64}, np::Int64, alpha::Float64, beta::Float64)
     # convert to references
@@ -8,7 +5,7 @@ function zwgljd!(z::Vector{Float64}, w::Vector{Float64}, np::Int64, alpha::Float
     alpha_ref = Ref{Float64}(alpha)
     beta_ref = Ref{Float64}(beta)
 
-    ccall((:zwgljd_, "$(file_dir)/../fortran/lib/gll_library.so"), Cvoid, (Ptr{Float64}, Ptr{Float64}, Ref{Int32}, Ref{Float64}, Ref{Float64}), z, w, np_ref, alpha_ref, beta_ref)
+    ccall((:zwgljd_, "../fortran/lib/gll_library.so"), Cvoid, (Ptr{Float64}, Ptr{Float64}, Ref{Int32}, Ref{Float64}, Ref{Float64}), z, w, np_ref, alpha_ref, beta_ref)
 end
 
 # sem_mesh_mod
@@ -17,7 +14,7 @@ function anchor_point_index!(iax::Vector{Int32}, iay::Vector{Int32}, iaz::Vector
     iay_32 = Int32.(iay)
     iaz_32 = Int32.(iaz)
     @assert length(iax) == 27 && length(iay) == 27 && length(iaz) == 27
-    ccall((:anchor_point_index_, "$(file_dir)/../fortran/lib/sem_mesh_mod.so"), Cvoid, (Ptr{Int32}, Ptr{Int32}, Ptr{Int32}), iax_32, iay_32, iaz_32)
+    ccall((:anchor_point_index_, "../fortran/lib/sem_mesh_mod.so"), Cvoid, (Ptr{Int32}, Ptr{Int32}, Ptr{Int32}), iax_32, iay_32, iaz_32)
     iax .= Int32.(iax_32)
     iay .= Int32.(iay_32)
     iaz .= Int32.(iaz_32)
@@ -27,7 +24,7 @@ end
 function xyz2cube_bounded!(xyz_anchor::Array{Float64,2}, xyz::Array{Float64,1}, uvw::Array{Float64,1}, misloc::Float64, flag_inside::Bool)
     misloc_ref = Ref{Float64}(misloc)
     flag_inside_ref = Ref{Bool}(flag_inside)
-    ccall((:xyz2cube_bounded_, "$(file_dir)/../fortran/lib/sem_mesh_mod.so"), Cvoid, (Ptr{Float64}, Ptr{Float64}, Ptr{Float64}, Ref{Float64}, Ref{Bool}), xyz_anchor, xyz, uvw, misloc_ref, flag_inside_ref)
+    ccall((:xyz2cube_bounded_, "../fortran/lib/sem_mesh_mod.so"), Cvoid, (Ptr{Float64}, Ptr{Float64}, Ptr{Float64}, Ref{Float64}, Ref{Bool}), xyz_anchor, xyz, uvw, misloc_ref, flag_inside_ref)
     return misloc_ref.x, flag_inside_ref.x
 end
 
