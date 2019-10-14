@@ -11,7 +11,7 @@ function zwgljd!(z::Vector{Float64}, w::Vector{Float64}, np::Int64, alpha::Float
     alpha_ref = Ref{Float64}(alpha)
     beta_ref = Ref{Float64}(beta)
 
-    ccall((:zwgljd_, lib_gll_library, Cvoid, (Ptr{Float64}, Ptr{Float64}, Ref{Int32}, Ref{Float64}, Ref{Float64}), z, w, np_ref, alpha_ref, beta_ref))
+    ccall((:zwgljd_, lib_gll_library), Cvoid, (Ptr{Float64}, Ptr{Float64}, Ref{Int32}, Ref{Float64}, Ref{Float64}), z, w, np_ref, alpha_ref, beta_ref)
 end
 
 # sem_mesh_mod
