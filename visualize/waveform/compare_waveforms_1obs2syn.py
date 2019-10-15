@@ -8,6 +8,7 @@ from recordtype import recordtype
 import numpy as np
 import click
 import matplotlib as mpl
+import tqdm
 
 label_size = 25
 mpl.rcParams['xtick.labelsize'] = label_size
@@ -16,7 +17,7 @@ to_plot_trace = recordtype("to_plot_trace", [
                            "obs_z", "syn1_z", "syn2_z", "obs_r", "syn1_r", "syn2_r",  "obs_t", "syn1_t", "syn2_t",  "info"])
 
 
-def build_to_plot_traces(obs_ds, syn1_ds, syn2_ds):
+def build_to_plot_traces(obs_ds, syn1_ds, syn2_ds, trace_length):
     # obs_ds,syn_ds opened asdf file
     # get keys
     key_obs = set(obs_ds.waveforms.list())
@@ -33,10 +34,19 @@ def build_to_plot_traces(obs_ds, syn1_ds, syn2_ds):
         tag_syn2 = syn2_ds.waveforms[key].get_waveform_tags()[0]
 
         # here we use syn1_ds, which is not the normal case
-        info = syn1_ds.auxiliary_data.Traveltimes[axkey].parameters
-        obs_st = obs_ds.waveforms[key][tag_obs]
-        syn1_st = syn1_ds.waveforms[key][tag_syn1]
-        syn2_st = syn2_ds.waveforms[key][tag_syn2]
+        info = obs_ds.auxiliary_data.Traveltimes[axkey].parameters
+        obs_st = obs_ds.waveforms[key][tag_obs].copy()
+        syn1_st = syn1_ds.waveforms[key][tag_syn1].copy()
+        syn2_st = syn2_ds.waveforms[key][tag_syn2].copy()
+
+        # slice
+        obs_st.trim(obs_st[0].stats.starttime,
+                    obs_st[0].stats.starttime+trace_length)
+        syn1_st.trim(syn1_st[0].stats.starttime,
+                     syn1_st[0].stats.starttime+trace_length)
+        syn2_st.trim(syn2_st[0].stats.starttime,
+                     syn2_st[0].stats.starttime+trace_length)
+
         obs_r = obs_st[0]
         obs_t = obs_st[1]
         obs_z = obs_st[2]
@@ -79,12 +89,13 @@ def build_plottting_structure(plot_traces, azimuth_width):
 @click.option('--azimuth_width', required=True, type=int)
 @click.option('--output_pdf', required=True, type=str)
 @click.option('--waves_perpage', required=True, type=int)
-def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpage):
+@click.option('--trace_length', required=True, type=int)
+def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpage, trace_length):
     obs_ds = pyasdf.ASDFDataSet(obs_asdf, mode="r")
     syn1_ds = pyasdf.ASDFDataSet(syn1_asdf, mode="r")
     syn2_ds = pyasdf.ASDFDataSet(syn2_asdf, mode="r")
 
-    plot_traces = build_to_plot_traces(obs_ds, syn1_ds, syn2_ds)
+    plot_traces = build_to_plot_traces(obs_ds, syn1_ds, syn2_ds, trace_length)
     plotting_structure = build_plottting_structure(plot_traces, azimuth_width)
 
     # plot figures
@@ -92,7 +103,7 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
     figs = plt.figure()
 
     num_azimuths = 360//azimuth_width
-    for index_azimuth in range(num_azimuths):
+    for index_azimuth in tqdm.tqdm(range(num_azimuths)):
         # for each azimuth bin
         azimuth_bin_plot_traces = plotting_structure[index_azimuth]
         num_azimuth_bin_plot_traces = len(azimuth_bin_plot_traces)
@@ -223,7 +234,7 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                     axt.legend(loc='upper right')
             plt.subplots_adjust(wspace=0, hspace=0)
             pdf.savefig(fig)
-        plt.close(fig=fig)
+            plt.close(fig=fig)
     pdf.close()
 
 

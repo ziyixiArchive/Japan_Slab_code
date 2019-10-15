@@ -2,3 +2,4 @@ data/*
 *.so
 *.DS_Store
 *.h5
+*.pdf
