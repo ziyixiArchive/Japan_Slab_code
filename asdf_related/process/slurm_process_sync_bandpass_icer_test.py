@@ -40,15 +40,15 @@ def get_scripts(run_files):
             if(offset >= N_files):
                 continue
             filename = run_files[offset]
-            result += f"srun --ntasks=1 ./process_sync_bandpass.py --min_periods {min_periods} --max_periods {max_periods} --asdf_filename {filename} --waveform_length {waveform_length} --sampling_rate {sampling_rate} --output_directory {PROCESSED_DIR} --logfile {logfile} &"
+            result += f"srun --ntasks={N_cores_each_node} ./process_sync_bandpass.py --min_periods {min_periods} --max_periods {max_periods} --asdf_filename {filename} --waveform_length {waveform_length} --sampling_rate {sampling_rate} --output_directory {PROCESSED_DIR} --logfile {logfile} &"
         result += f"wait; "
         result += f"echo 'end iteration {iiter}'; "
     return result
 
 
 def submit_job(thecommand):
-    s = Slurm("process_sync", {"ntasks": N_node,
-                               "time": "00:20:00", "cpus-per-task": N_cores_each_node, "mem-per-cpu": "2G"})
+    s = Slurm("process_sync", {"nodes": N_node, "ntasks": N_cores,
+                               "time": "00:10:00", "mem-per-cpu": "2G"})
     s.run(thecommand)
 
 
