@@ -18,9 +18,9 @@ min_periods = "10,20,40"
 max_periods = "120,120,120"
 waveform_length = 1800
 sampling_rate = 10
-logfile = "/mnt/scratch/xiziyi/process_sync_validation/hybrid_processed.log"
-RAW_DIR = "/mnt/scratch/xiziyi/process_sync_validation/sync_validation/hybrid"
-PROCESSED_DIR = "/mnt/scratch/xiziyi/process_sync_validation/hybrid_processed"
+logfile = "/mnt/scratch/xiziyi/process_sync_validation/s362ani_processed.log"
+RAW_DIR = "/mnt/scratch/xiziyi/process_sync_validation/sync_validation/s362ani"
+PROCESSED_DIR = "/mnt/scratch/xiziyi/process_sync_validation/s362ani_processed"
 
 
 def get_files(base_dir):
