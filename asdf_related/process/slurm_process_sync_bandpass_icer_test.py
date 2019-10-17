@@ -4,13 +4,13 @@ from os.path import join
 from slurmpy import Slurm
 
 # some resources information
-N_cores = 40
-N_node = 2
+N_cores = 80
+N_node = 4
 N_cores_each_node = 20
 
 # the base sync directory storing asdf files
 N_files = 4  # 270
-N_iters = 2  # 14
+N_iters = 1  # 14
 
 # some configuration
 PY = "/mnt/home/xiziyi/anaconda3/envs/seismology/bin/python"
