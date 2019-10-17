@@ -11,6 +11,7 @@ from loguru import logger
 from obspy.geodetics.base import gps2dist_azimuth
 from pyasdf import ASDFDataSet
 import pandas as pd
+from obspy.signal.invsim import simulate_seismometer
 
 # TODO problems may be in "water level" somewhere
 
@@ -23,7 +24,7 @@ CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB"
                 "JL", "JS", "JX", "LN", "NM", "NX", "QH", "SC", "SD", "SH", "SN", "SX", "TJ", "XJ", "XZ", "YN", "ZJ"]
 
 
-def process_single_event(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
+def process_single_event(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
     # with pyasdf.ASDFDataSet(asdf_filename) as ds:
     ds = pyasdf.ASDFDataSet(asdf_filename, mode="r")
 
@@ -111,12 +112,15 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
             st.detrend("linear")
             st.taper(max_percentage=0.05, type="hann")
 
-            st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
-                               taper=False, inventory=inv, water_level=None)
-
-            # the same of removing response with sac
-            st.detrend("demean")
-            st.detrend("linear")
+            # st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
+            #                    taper=False, inventory=inv, water_level=None)
+            st = remove_response_paz(st, paz_directory, pre_filt)
+            if(st == None):
+                logger.error(
+                    f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in removing response"
+                )
+                return
+            # sac has already removed mean after removing the response.
 
             st.interpolate(sampling_rate=sampling_rate)
 
@@ -154,7 +158,6 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
                 logger.error(
                     f"[{rank}/{size}] {inv.get_contents()['stations'][0]} doesn't have both N and E")
                 return
-
             # bandpass filter
             st.filter("bandpass", freqmin=1.0/max_period,
                       freqmax=1.0/min_period, corners=2, zerophase=True)
@@ -296,6 +299,29 @@ def filter_st(st, inv):
     return newst
 
 
+def remove_response_paz(st, paz_directory, pre_filt):
+    """
+    remove response using paz file
+    """
+    for trace in st:
+        # get key
+        network = trace.stats.network
+        station = trace.stats.station
+        channel = trace.stats.channel
+        key = f"{network}.{station}.{channel}"
+        paz_path = join(paz_directory, key)
+        # try to read paz
+        try:
+            obspy.io.sac.sacpz.attach_paz(trace, paz_path)
+        except:
+            return None
+        # ndarray
+        data = simulate_seismometer(
+            trace.data, trace.stats.sampling_rate, paz_remove=trace.stats.paz, water_level=6e9, zero_mean=False, taper=False, pre_filt=pre_filt, sacsim=True)
+        trace.data = data
+    return st
+
+
 if __name__ == "__main__":
     import click
 
@@ -308,11 +334,12 @@ if __name__ == "__main__":
     @click.option('--output_directory', required=True, type=str, help="output directory")
     @click.option('--logfile', required=True, type=str, help="the logging file")
     @click.option('--correct_cea/--no-correct_cea', default=False, help="if handling cea dataset")
-    @click.option('--cea_correction_file', required=False, type=str, help="the cea correction file")
-    def main(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
+    @click.option('--cea_correction_file', required=True, type=str, help="the cea correction file")
+    @click.option('--paz_directory', required=True, type=str, help="the paz directory, named with gcmtid")
+    def main(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
         min_periods = [float(item) for item in min_periods.split(",")]
         max_periods = [float(item) for item in max_periods.split(",")]
         process_single_event(min_periods, max_periods, asdf_filename,
-                             waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file)
+                             waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory)
 
     main()
