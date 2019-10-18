@@ -11,6 +11,7 @@ from loguru import logger
 from obspy.geodetics.base import gps2dist_azimuth
 from pyasdf import ASDFDataSet
 import pandas as pd
+from mpi4py import MPI
 from obspy.signal.invsim import simulate_seismometer
 
 # fix a bug in intel
@@ -21,8 +22,10 @@ mpi4py.rc.recv_mprobe = False
 # TODO problems may be in "water level" somewhere
 
 # global parameters
-rank = None
-size = None
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+isroot = (rank == 0)
 
 # CEA_NETWORKS
 CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB", "HE", "HI", "HL", "HN",
@@ -43,11 +46,6 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
             modify_time)
 
     # add logger information
-    global rank
-    global size
-    rank = ds.mpi.comm.Get_rank()
-    size = ds.mpi.comm.Get_size()
-    isroot = (rank == 0)
     logger.add(logfile, format="{time} {level} {message}", level="INFO")
 
     # some parameters
@@ -120,6 +118,10 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
             # st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
             #                    taper=False, inventory=inv, water_level=None)
             st = remove_response_paz(st, paz_directory, pre_filt)
+            # the same of removing response with sac
+            st.detrend("demean")
+            st.detrend("linear")
+
             if(st == None):
                 logger.error(
                     f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in removing response"
@@ -181,8 +183,9 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
         output_name_head = asdf_filename.split("/")[-1].split(".")[0]
         ds.process(process_function, join(
             output_directory, output_name_head+"."+tag_name + ".h5"), tag_map=tag_map)
-        logger.success(
-            f"[{rank}/{size}] success in processing {asdf_filename} from {min_period}s to {max_period}s")
+        if(isroot):
+            logger.success(
+                f"[{rank}/{size}] success in processing {asdf_filename} from {min_period}s to {max_period}s")
 
     del ds
 
@@ -288,14 +291,33 @@ def check_time(st, event_time, waveform_length, inv):
 
 
 def filter_st(st, inv):
+    # we should assure only to add one type of data, as the order of HH,BH,SH (we don't consider the case like
+    # only 2 HH but 3 BH.)
     newst = obspy.Stream()
+    # get band code status
+    band_code = None
+    band_code_list = []
+    for trace in st:
+        theid = trace.id
+        net, sta, loc, cha = theid.split(".")
+        band_code_list.append(cha[:2])
+    if(len(band_code_list) == 0):
+        return newst
+    else:
+        if("HH" in band_code_list):
+            band_code = "HH"
+        elif("BH" in band_code_list):
+            band_code = "BH"
+        elif("SH" in band_code_list):
+            band_code = "SH"
+        else:
+            return newst
     for trace in st:
         theid = trace.id
         net, sta, loc, cha = theid.split(".")
 
         con1 = ((loc == "") or (loc == "00"))
-        con2 = (cha[:2] == "BH" or (
-            (net in CEA_NETWORKS) and (cha[:2] == "SH")))
+        con2 = (cha[:2] == band_code)
         if(con1 and con2):
             newst += trace
         else:
