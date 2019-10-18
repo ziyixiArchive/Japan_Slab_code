@@ -18,7 +18,7 @@ def check(fname):
     try:
         with pyasdf.ASDFDataSet(fname) as ds:
             for item in ds.waveforms.list():
-                maxvalue = np.max(ds.waveforms[item].sync[0].data)
+                maxvalue = np.max(ds.waveforms[item].synthetic[0].data)
         return True
     except:
         print(fname)
