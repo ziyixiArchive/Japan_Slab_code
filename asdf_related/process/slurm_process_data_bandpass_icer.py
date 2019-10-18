@@ -5,13 +5,13 @@ from os.path import join
 from slurmpy import Slurm
 
 # some resources information
-N_cores = 400
-N_node = 20
+N_cores = 200
+N_node = 10
 N_cores_each_node = 20
 
 # the base sync directory storing asdf files
 N_files = 284
-N_iters = 15
+N_iters = 29
 
 # some configuration
 PY = "/mnt/home/xiziyi/anaconda3/envs/seismology/bin/python"
@@ -52,7 +52,7 @@ def get_scripts(run_files):
 
 def submit_job(thecommand):
     s = Slurm("process_data", {"nodes": N_node, "ntasks": N_cores,
-                               "time": "12:00:00", "cpus-per-task": 1, "mem-per-cpu": "4G"})
+                               "time": "24:00:00", "cpus-per-task": 1, "mem-per-cpu": "4G"})
     s.run(thecommand)
 
 
