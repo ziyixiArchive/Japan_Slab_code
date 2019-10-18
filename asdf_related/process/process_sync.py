@@ -9,6 +9,10 @@ from obspy.signal.util import _npts2nfft
 from os.path import join
 from loguru import logger
 
+# fix a bug in intel
+import mpi4py
+mpi4py.rc.recv_mprobe = False
+
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()

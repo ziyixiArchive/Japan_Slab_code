@@ -13,6 +13,11 @@ from pyasdf import ASDFDataSet
 import pandas as pd
 from obspy.signal.invsim import simulate_seismometer
 
+# fix a bug in intel
+import mpi4py
+mpi4py.rc.recv_mprobe = False
+
+
 # TODO problems may be in "water level" somewhere
 
 # global parameters
