@@ -185,3 +185,4 @@ def get_windows_for_single_trace(travel_times, component, obs, syn, min_period):
 
 def main(obs_path, syn_path):
     # init
+    with pyasdf.ASDFDataSet(obs_path, mode="r") as obs_
