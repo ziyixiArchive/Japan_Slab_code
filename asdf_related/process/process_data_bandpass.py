@@ -11,6 +11,7 @@ from loguru import logger
 from obspy.geodetics.base import gps2dist_azimuth
 from pyasdf import ASDFDataSet
 import pandas as pd
+from mpi4py import MPI
 
 
 # fix a bug in intel
@@ -20,8 +21,11 @@ mpi4py.rc.recv_mprobe = False
 # TODO problems may be in "water level" somewhere
 
 # global parameters
-rank = None
-size = None
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+isroot = (rank == 0)
+
 
 # CEA_NETWORKS
 CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB", "HE", "HI", "HL", "HN",
@@ -30,158 +34,154 @@ CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB"
 
 def process_single_event(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
     # with pyasdf.ASDFDataSet(asdf_filename) as ds:
-    ds = pyasdf.ASDFDataSet(asdf_filename, mode="r")
+    with pyasdf.ASDFDataSet(asdf_filename, mode="r") as ds:
 
-    # load cea correction file
-    if(correct_cea):
-        correction_data = pd.read_csv(cea_correction_file, sep="|", comment="#", names=[
-            "network", "station", "eventno", "mean", "std", "median", "mad", "starttime", "endtime"])
-        correction_data["starttime"] = correction_data["starttime"].apply(
-            modify_time)
-        correction_data["endtime"] = correction_data["endtime"].apply(
-            modify_time)
+        # load cea correction file
+        if(correct_cea):
+            correction_data = pd.read_csv(cea_correction_file, sep="|", comment="#", names=[
+                "network", "station", "eventno", "mean", "std", "median", "mad", "starttime", "endtime"])
+            correction_data["starttime"] = correction_data["starttime"].apply(
+                modify_time)
+            correction_data["endtime"] = correction_data["endtime"].apply(
+                modify_time)
 
-    # add logger information
-    global rank
-    global size
-    rank = ds.mpi.comm.Get_rank()
-    size = ds.mpi.comm.Get_size()
-    isroot = (rank == 0)
-    logger.add(logfile, format="{time} {level} {message}", level="INFO")
+        # add logger information
+        logger.add(logfile, format="{time} {level} {message}", level="INFO")
 
-    # some parameters
-    event = ds.events[0]
-    origin = event.preferred_origin() or event.origins[0]
-    event_time = origin.time
-    event_latitude = origin.latitude
-    event_longitude = origin.longitude
+        # some parameters
+        event = ds.events[0]
+        origin = event.preferred_origin() or event.origins[0]
+        event_time = origin.time
+        event_latitude = origin.latitude
+        event_longitude = origin.longitude
 
-    for min_period, max_period in zip(min_periods, max_periods):
-        # log
-        if(isroot):
-            logger.success(
-                f"[{rank}/{size}] start to process {asdf_filename} from {min_period}s to {max_period}s")
-            if(correct_cea):
-                logger.success(
-                    f"[{rank}/{size}] will correct cea dataset according to the cea station orientation information")
-
-        f2 = 1.0 / 400.0
-        f3 = 1.0 / 1.0
-        f1 = 0.5 * f2
-        f4 = 2.0 * f3
-        pre_filt = (f1, f2, f3, f4)
-
-        # log
-        if(isroot):
-            logger.success(
-                f"[{rank}/{size}] {asdf_filename} is filtered with {f1} {f2} {f3} {f4}")
-
-        def process_function(st, inv):
+        for min_period, max_period in zip(min_periods, max_periods):
             # log
-            logger.info(
-                f"[{rank}/{size}] processing {inv.get_contents()['stations'][0]}")
+            if(isroot):
+                logger.success(
+                    f"[{rank}/{size}] start to process {asdf_filename} from {min_period}s to {max_period}s")
+                if(correct_cea):
+                    logger.success(
+                        f"[{rank}/{size}] will correct cea dataset according to the cea station orientation information")
 
-            # there are possibility that some stations has multiple loc codes or use HH stations. (should avoid in the future)
-            st = filter_st(st, inv)
+            f2 = 1.0 / 400.0
+            f3 = 1.0 / 1.0
+            f1 = 0.5 * f2
+            f4 = 2.0 * f3
+            pre_filt = (f1, f2, f3, f4)
 
-            # overlap the previous trace
-            status_code = check_st_numberlap(st, inv)
-            if(status_code == -1):
-                return
-            elif(status_code == 0):
-                pass
-            elif(status_code == 1):
-                # merge may have roblem (samplign rate is not equal)
-                try:
-                    st.merge(method=1, fill_value=0, interpolation_samples=0)
-                except:
-                    logger.error(
-                        f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in merging")
+            # log
+            if(isroot):
+                logger.success(
+                    f"[{rank}/{size}] {asdf_filename} is filtered with {f1} {f2} {f3} {f4}")
+
+            def process_function(st, inv):
+                # log
+                logger.info(
+                    f"[{rank}/{size}] processing {inv.get_contents()['stations'][0]}")
+
+                # there are possibility that some stations has multiple loc codes or use HH stations. (should avoid in the future)
+                st = filter_st(st, inv)
+
+                # overlap the previous trace
+                status_code = check_st_numberlap(st, inv)
+                if(status_code == -1):
                     return
-            else:
-                raise Exception("unknown status code")
+                elif(status_code == 0):
+                    pass
+                elif(status_code == 1):
+                    # merge may have roblem (samplign rate is not equal)
+                    try:
+                        st.merge(method=1, fill_value=0,
+                                 interpolation_samples=0)
+                    except:
+                        logger.error(
+                            f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in merging")
+                        return
+                else:
+                    raise Exception("unknown status code")
 
-            status_code = check_time(st, event_time, waveform_length, inv)
-            if(status_code == 0):
-                pass
-            elif(status_code == -1):
-                logger.error(
-                    f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in cutting data")
-                return
-            else:
-                raise Exception("unknown status code")
-            st.trim(event_time, event_time+waveform_length)
-
-            st.detrend("demean")
-            st.detrend("linear")
-            st.taper(max_percentage=0.05, type="hann")
-
-            st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
-                               taper=False, inventory=inv, water_level=None)
-
-            # the same of removing response with sac
-            st.detrend("demean")
-            st.detrend("linear")
-
-            st.interpolate(sampling_rate=sampling_rate)
-
-            # ! have problem here (all value is zero)
-            station_latitude = inv[0][0].latitude
-            station_longitude = inv[0][0].longitude
-
-            # baz is calculated using station and event's location
-            # for cea stations, we can directly add an angle to it
-            _, baz, _ = gps2dist_azimuth(station_latitude, station_longitude,
-                                         event_latitude, event_longitude)
-
-            network = inv.get_contents()['networks'][0]
-            if(correct_cea and (network in CEA_NETWORKS)):
-                baz = func_correct_cea(
-                    baz, inv, event_time, correction_data)
-            if(baz == None):
-                logger.error(
-                    f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in correcting orientation")
-                return
-
-            # we have to limit baz to be in [0,360)
-            baz = np.mod(baz, 360)
-
-            components = [tr.stats.channel[-1] for tr in st]
-            if "N" in components and "E" in components:
-                # there may be some problem in rotating (time span is not equal for three channels)
-                try:
-                    st.rotate(method="NE->RT", back_azimuth=baz)
-                except:
+                status_code = check_time(st, event_time, waveform_length, inv)
+                if(status_code == 0):
+                    pass
+                elif(status_code == -1):
                     logger.error(
-                        f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in rotating")
+                        f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in cutting data")
                     return
-            else:
-                logger.error(
-                    f"[{rank}/{size}] {inv.get_contents()['stations'][0]} doesn't have both N and E")
-                return
+                else:
+                    raise Exception("unknown status code")
+                st.trim(event_time, event_time+waveform_length)
 
-            # bandpass filter
-            st.filter("bandpass", freqmin=1.0/max_period,
-                      freqmax=1.0/min_period, corners=2, zerophase=True)
+                st.detrend("demean")
+                st.detrend("linear")
+                st.taper(max_percentage=0.05, type="hann")
 
-            # Convert to single precision to save space.
-            for tr in st:
-                tr.data = np.require(tr.data, dtype="float32")
+                st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
+                                   taper=False, inventory=inv, water_level=None)
 
-            return st
+                # the same of removing response with sac
+                st.detrend("demean")
+                st.detrend("linear")
 
-        tag_name = "preprocessed_%is_to_%is" % (
-            int(min_period), int(max_period))
-        tag_map = {
-            "raw": tag_name
-        }
-        output_name_head = asdf_filename.split("/")[-1].split(".")[0]
-        ds.process(process_function, join(
-            output_directory, output_name_head+"."+tag_name + ".h5"), tag_map=tag_map)
-        logger.success(
-            f"[{rank}/{size}] success in processing {asdf_filename} from {min_period}s to {max_period}s")
+                st.interpolate(sampling_rate=sampling_rate)
 
-    del ds
+                # ! have problem here (all value is zero)
+                station_latitude = inv[0][0].latitude
+                station_longitude = inv[0][0].longitude
+
+                # baz is calculated using station and event's location
+                # for cea stations, we can directly add an angle to it
+                _, baz, _ = gps2dist_azimuth(station_latitude, station_longitude,
+                                             event_latitude, event_longitude)
+
+                network = inv.get_contents()['networks'][0]
+                if(correct_cea and (network in CEA_NETWORKS)):
+                    baz = func_correct_cea(
+                        baz, inv, event_time, correction_data)
+                if(baz == None):
+                    logger.error(
+                        f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in correcting orientation")
+                    return
+
+                # we have to limit baz to be in [0,360)
+                baz = np.mod(baz, 360)
+
+                components = [tr.stats.channel[-1] for tr in st]
+                if "N" in components and "E" in components:
+                    # there may be some problem in rotating (time span is not equal for three channels)
+                    try:
+                        st.rotate(method="NE->RT", back_azimuth=baz)
+                    except:
+                        logger.error(
+                            f"[{rank}/{size}] {inv.get_contents()['stations'][0]} error in rotating")
+                        return
+                else:
+                    logger.error(
+                        f"[{rank}/{size}] {inv.get_contents()['stations'][0]} doesn't have both N and E")
+                    return
+
+                # bandpass filter
+                st.filter("bandpass", freqmin=1.0/max_period,
+                          freqmax=1.0/min_period, corners=2, zerophase=True)
+
+                # Convert to single precision to save space.
+                for tr in st:
+                    tr.data = np.require(tr.data, dtype="float32")
+
+                return st
+
+            tag_name = "preprocessed_%is_to_%is" % (
+                int(min_period), int(max_period))
+            tag_map = {
+                "raw": tag_name
+            }
+            output_name_head = asdf_filename.split("/")[-1].split(".")[0]
+            ds.process(process_function, join(
+                output_directory, output_name_head+"."+tag_name + ".h5"), tag_map=tag_map)
+
+            if(rank == 0):
+                logger.success(
+                    f"[{rank}/{size}] success in processing {asdf_filename} from {min_period}s to {max_period}s")
 
 
 def check_st_numberlap(st, inv):
@@ -285,14 +285,33 @@ def check_time(st, event_time, waveform_length, inv):
 
 
 def filter_st(st, inv):
+    # we should assure only to add one type of data, as the order of HH,BH,SH (we don't consider the case like
+    # only 2 HH but 3 BH.)
     newst = obspy.Stream()
+    # get band code status
+    band_code = None
+    band_code_list = []
+    for trace in st:
+        theid = trace.id
+        net, sta, loc, cha = theid.split(".")
+        band_code_list.append(cha[:2])
+    if(len(band_code_list) == 0):
+        return newst
+    else:
+        if("HH" in band_code_list):
+            band_code = "HH"
+        elif("BH" in band_code_list):
+            band_code = "BH"
+        elif("SH" in band_code_list):
+            band_code = "SH"
+        else:
+            return newst
     for trace in st:
         theid = trace.id
         net, sta, loc, cha = theid.split(".")
 
         con1 = ((loc == "") or (loc == "00"))
-        con2 = (cha[:2] == "BH" or (
-            (net in CEA_NETWORKS) and (cha[:2] == "SH")))
+        con2 = (cha[:2] == band_code)
         if(con1 and con2):
             newst += trace
         else:
