@@ -279,7 +279,8 @@ def check_time(st, event_time, waveform_length, inv):
     for trace in st:
         starttime = trace.stats.starttime
         endtime = trace.stats.endtime
-        if(starttime > event_time):
+        # add some tolerance here (1 min)
+        if(starttime-60 > event_time):
             logger.error(
                 f"[{rank}/{size}] {inv.get_contents()['stations'][0]} starttime:{str(starttime)} > event_time:{str(event_time)}")
             return -1
