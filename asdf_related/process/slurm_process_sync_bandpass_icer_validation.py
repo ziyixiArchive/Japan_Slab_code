@@ -18,9 +18,9 @@ min_periods = "10,20,40"
 max_periods = "120,120,120"
 waveform_length = 1800
 sampling_rate = 10
-logfile = "/mnt/scratch/xiziyi/process_sync_validation/crust1_stw105_processed.log"
-RAW_DIR = "/mnt/scratch/xiziyi/process_sync_validation/sync_validation/crust1_stw105"
-PROCESSED_DIR = "/mnt/scratch/xiziyi/process_sync_validation/crust1_stw105_processed"
+logfile = "/mnt/scratch/xiziyi/process_sync_validation/EARA2014_smooth_crust2.0_processed.log"
+RAW_DIR = "/mnt/scratch/xiziyi/process_sync_validation/sync_validation/EARA2014_smooth_crust2.0"
+PROCESSED_DIR = "/mnt/scratch/xiziyi/process_sync_validation/EARA2014_smooth_crust2.0_processed"
 
 
 def get_files(base_dir):
