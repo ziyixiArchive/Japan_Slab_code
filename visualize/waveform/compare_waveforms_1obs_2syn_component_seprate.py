@@ -104,9 +104,9 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
 
     num_azimuths = 360//azimuth_width
     for index_azimuth in tqdm.tqdm(range(num_azimuths)):
-        # ! for developing
-        if(index_azimuth == 2):
-            break
+        # # ! for developing
+        # if(index_azimuth == 2):
+        #     break
         # for each azimuth bin
         azimuth_bin_plot_traces = plotting_structure[index_azimuth]
         num_azimuth_bin_plot_traces = len(azimuth_bin_plot_traces)
@@ -144,11 +144,11 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 y_obs = obs.data
                 y_syn1 = syn1.data
                 y_syn2 = syn2.data
-                axz.plot(x_obs, y_obs, color="k")
-                axz.plot(x_syn1, y_syn1, color="r")
-                axz.plot(x_syn2, y_syn2, color="b")
+                axz.plot(x_obs, y_obs, color="k", linewidth=6.0)
+                axz.plot(x_syn1, y_syn1, color="r", linewidth=6.0)
+                axz.plot(x_syn2, y_syn2, color="b", linewidth=6.0)
 
-                # axz.get_yaxis().set_ticklabels([])
+                axz.get_yaxis().set_ticklabels([])
                 # index_count += 1
                 # r
                 axr = fig_r.add_subplot(waves_perpage, 1, index_count)
@@ -164,11 +164,11 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 y_obs = obs.data
                 y_syn1 = syn1.data
                 y_syn2 = syn2.data
-                axr.plot(x_obs, y_obs, color="k")
-                axr.plot(x_syn1, y_syn1, color="r")
-                axr.plot(x_syn2, y_syn2, color="b")
+                axr.plot(x_obs, y_obs, color="k", linewidth=6.0)
+                axr.plot(x_syn1, y_syn1, color="r", linewidth=6.0)
+                axr.plot(x_syn2, y_syn2, color="b", linewidth=6.0)
 
-                # axr.get_yaxis().set_ticklabels([])
+                axr.get_yaxis().set_ticklabels([])
                 # index_count += 1
                 # t
                 axt = fig_t.add_subplot(waves_perpage, 1, index_count)
@@ -184,11 +184,11 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 y_obs = obs.data
                 y_syn1 = syn1.data
                 y_syn2 = syn2.data
-                axt.plot(x_obs, y_obs, color="k")
-                axt.plot(x_syn1, y_syn1, color="r")
-                axt.plot(x_syn2, y_syn2, color="b")
+                axt.plot(x_obs, y_obs, color="k", linewidth=6.0)
+                axt.plot(x_syn1, y_syn1, color="r", linewidth=6.0)
+                axt.plot(x_syn2, y_syn2, color="b", linewidth=6.0)
 
-                # axt.get_yaxis().set_ticklabels([])
+                axt.get_yaxis().set_ticklabels([])
                 index_count += 1
 
                 # add labels
@@ -203,15 +203,15 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 axz.set_xticks(xticks)
                 axr.set_xticks(xticks)
                 axt.set_xticks(xticks)
-                axz.tick_params(axis="x", labelsize=60)
-                axr.tick_params(axis="x", labelsize=60)
-                axt.tick_params(axis="x", labelsize=60)
-                axz.tick_params(axis="y", labelsize=50)
-                axr.tick_params(axis="y", labelsize=50)
-                axt.tick_params(axis="y", labelsize=50)
+                axz.tick_params(axis="x", labelsize=100)
+                axr.tick_params(axis="x", labelsize=100)
+                axt.tick_params(axis="x", labelsize=100)
+                axz.tick_params(axis="y", labelsize=100)
+                axr.tick_params(axis="y", labelsize=100)
+                axt.tick_params(axis="y", labelsize=100)
                 # plot texts
-                axz.text(0.95, 0.7, f"id:{each_plot_id}\ngcarc:{each_plot_trace.info['gcarc']:.2f}\nazimuth:{each_plot_trace.info['azimuth']:.2f}",
-                         transform=axz.transAxes, fontsize=60)
+                axz.text(0.90, 0.53, f"id:{each_plot_id}\ngcarc:{each_plot_trace.info['gcarc']:.2f}\nazimuth:{each_plot_trace.info['azimuth']:.2f}",
+                         transform=axz.transAxes, fontsize=100)
 
                 # plot title
                 if(index_count == 2):
@@ -225,38 +225,74 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 # plot travel times
                 info = each_plot_trace.info
                 # z
-                plot_travel_times(axz, "p", info["p"], np.max(x_obs), "blue")
-                plot_travel_times(axz, "pp", info["pp"], np.max(x_obs), "y")
-                plot_travel_times(axz, "sp", info["sp"], np.max(x_obs), "r")
+                axz2 = axz.twiny()
+                axz2.set_xlim(axz.get_xlim())
+                twin_label = []
+                plot_travel_times(axz2, "p", info["p"], np.max(
+                    x_obs), "blue", twin_label)
                 plot_travel_times(
-                    axz, "rayleigh", info["rayleigh"], np.max(x_obs), "c")
-                plot_travel_times(axz, "s", info["s"], np.max(x_obs), "green")
+                    axz2, "pp", info["pp"], np.max(x_obs), "y", twin_label)
                 plot_travel_times(
-                    axz, "ss", info["ss"], np.max(x_obs), "black")
+                    axz2, "sp", info["sp"], np.max(x_obs), "r", twin_label)
+                plot_travel_times(
+                    axz2, "rayleigh", info["rayleigh"], np.max(x_obs), "c", twin_label)
+                plot_travel_times(axz2, "s", info["s"], np.max(
+                    x_obs), "green", twin_label)
+                plot_travel_times(
+                    axz2, "ss", info["ss"], np.max(x_obs), "black", twin_label)
+                twin_x = [item[0] for item in twin_label]
+                twin_name = [item[1] for item in twin_label]
+                axz2.set_xticks(twin_x)
+                axz2.set_xticklabels(twin_name, fontsize=50)
+                axz2.xaxis.set_tick_params(rotation=90)
                 # r
-                plot_travel_times(axr, "p", info["p"], np.max(x_obs), "blue")
-                plot_travel_times(axr, "pp", info["pp"], np.max(x_obs), "y")
-                plot_travel_times(axr, "sp", info["sp"], np.max(x_obs), "r")
+                axr2 = axr.twiny()
+                axr2.set_xlim(axr.get_xlim())
+                twin_label = []
+                plot_travel_times(axr, "p", info["p"], np.max(
+                    x_obs), "blue", twin_label)
                 plot_travel_times(
-                    axr, "rayleigh", info["rayleigh"], np.max(x_obs), "c")
-                plot_travel_times(axr, "s", info["s"], np.max(x_obs), "green")
+                    axr, "pp", info["pp"], np.max(x_obs), "y", twin_label)
                 plot_travel_times(
-                    axr, "ss", info["ss"], np.max(x_obs), "black")
+                    axr, "sp", info["sp"], np.max(x_obs), "r", twin_label)
+                plot_travel_times(
+                    axr, "rayleigh", info["rayleigh"], np.max(x_obs), "c", twin_label)
+                plot_travel_times(axr, "s", info["s"], np.max(
+                    x_obs), "green", twin_label)
+                plot_travel_times(
+                    axr, "ss", info["ss"], np.max(x_obs), "black", twin_label)
+                twin_x = [item[0] for item in twin_label]
+                twin_name = [item[1] for item in twin_label]
+                axr2.set_xticks(twin_x)
+                axr2.set_xticklabels(twin_name, fontsize=50)
+                axr2.xaxis.set_tick_params(rotation=90)
                 # t
-                plot_travel_times(axt, "s", info["s"], np.max(x_obs), "green")
+                axt2 = axt.twiny()
+                axt2.set_xlim(axt.get_xlim())
+                twin_label = []
+                plot_travel_times(axt, "s", info["s"], np.max(
+                    x_obs), "green", twin_label)
                 plot_travel_times(
-                    axt, "ss", info["ss"], np.max(x_obs), "black")
+                    axt, "ss", info["ss"], np.max(x_obs), "black", twin_label)
                 plot_travel_times(
-                    axt, "scs", info["scs"], np.max(x_obs), "magenta")
+                    axt, "scs", info["scs"], np.max(x_obs), "magenta", twin_label)
                 plot_travel_times(
-                    axt, "love", info["love"], np.max(x_obs), "teal")
-                if(index_count == 4):
-                    axz.legend(loc='upper right')
-                    axr.legend(loc='upper right')
-                    axt.legend(loc='upper right')
+                    axt, "love", info["love"], np.max(x_obs), "teal", twin_label)
+                twin_x = [item[0] for item in twin_label]
+                twin_name = [item[1] for item in twin_label]
+                axt2.set_xticks(twin_x)
+                axt2.set_xticklabels(twin_name, fontsize=50)
+                axt2.xaxis.set_tick_params(rotation=90)
+                # if(index_count == 4):
+                #     axz.legend(loc='upper right')
+                #     axr.legend(loc='upper right')
+                #     axt.legend(loc='upper right')
             plt.subplots_adjust(wspace=0, hspace=0)
+            fig_z.tight_layout()
             pdf.savefig(fig_z)
+            fig_r.tight_layout()
             pdf.savefig(fig_r)
+            fig_t.tight_layout()
             pdf.savefig(fig_t)
             plt.close(fig=fig_z)
             plt.close(fig=fig_r)
@@ -264,11 +300,16 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
     pdf.close()
 
 
-def plot_travel_times(ax, phasename, traveltime, length, thecolor):
+def plot_travel_times(ax, phasename, traveltime, length, thecolor, twin_label):
     if(traveltime < 1e-6):
         return
     if(traveltime < length):
-        ax.scatter(traveltime, 0, color=thecolor, label=phasename, s=9)
+        # ax.scatter(traveltime, 0, color=thecolor, label=phasename, s=9)
+        ax.axvline(x=traveltime, color="g", linestyle='--', linewidth=3.0)
+        # ax.text(traveltime, ylim[0]+(ylim[1]-ylim[0])*0.9, phasename)
+        if(phasename == "rayleigh"):
+            phasename = "rayl"
+        twin_label.append((traveltime, phasename))
 
 
 def plot_windows(ax, phasename, win, thecolor):
