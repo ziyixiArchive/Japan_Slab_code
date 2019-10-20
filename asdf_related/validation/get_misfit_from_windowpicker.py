@@ -17,7 +17,7 @@ win = namedtuple("win", ["gcarc", "comp", "p", "s", "pp", "ss",
                          "sp", "scs", "rayleigh", "love"])
 
 # some constants
-PADDING = 15
+PADDING = 0
 
 
 def str2num(x):
@@ -143,7 +143,7 @@ def save_result(theresult, output_fname):
     for item in theresult:
         net_sta, comp, thewin = item
         dict_result[(net_sta, comp)] = thewin
-    with open('output_fname', 'wb') as handle:
+    with open(output_fname, 'wb') as handle:
         pickle.dump(dict_result, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
