@@ -1,6 +1,6 @@
 using ArgParse
 include("../specfem_gll.jl/scripts/perturbation_bin_file.jl")
-include(",,/specfem_gll.jl/src/utils/readfiles.jl")
+include("../specfem_gll.jl/src/utils/readfiles.jl")
 
 function parse_command_line()
     s = ArgParseSettings()
