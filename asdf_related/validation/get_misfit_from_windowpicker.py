@@ -66,7 +66,7 @@ def read_asdf_files(data_fname, sync_fname):
     return data_asdf, sync_asdf
 
 
-def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_time):
+def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_time, noise_average_energy):
     """
     Assume here we already have data and sync's traces matched.
     """
@@ -89,7 +89,11 @@ def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_t
     delta = tr_data.stats.delta
     deltat = delta*max_cc_pos
 
-    return similarity, deltat
+    # calculate the snr use cc_data
+    signal_average_energy = np.sum(cc_data.data**2)/len(cc_data.data)
+    snr = signal_average_energy/noise_average_energy
+
+    return similarity, deltat, max_cc, snr
 
 
 def get_tags(data_asdf, sync_asdf):
@@ -102,37 +106,60 @@ def get_tags(data_asdf, sync_asdf):
     return data_tag, sync_tag
 
 
+def cal_noise_average_energy(tr_data, win_info, event_time):
+    first_arrival = win_info.p[0] or win_info.s[0]
+    noise_start = None
+    if(first_arrival == None):
+        # no first arrival, we don't use that trace
+        return 1e9
+    else:
+        if(first_arrival >= 120):
+            # the first part of the data may have some problem
+            noise_start = 100
+        elif(first_arrival >= 70):
+            noise_start = 50
+        else:
+            noise_start = 0
+    noise_win_start = event_time+noise_start
+    noise_win_end = event_time+first_arrival-10
+    tr_noise = tr_data.slice(noise_win_start, noise_win_end)
+    noise_average_energy = np.sum(tr_noise.data**2)/len(tr_noise.data)
+    return noise_average_energy
+
+
 def kernel(kernel_info,  event_time=None):
     # here the kcomp is just a number labeled as: 0 R 1 T 2 Z
     net_sta, comp, win_info, tr_data_st, tr_sync_st = kernel_info
     tr_data = tr_data_st[comp]
     tr_sync = tr_sync_st[comp]
+    noise_average_energy = cal_noise_average_energy(
+        tr_data, win_info, event_time)
     # here the win_info is just a win tuple, we use the same tuple to output the result
     # the processing scripts has already cut the starttime of the data and sync as the event time
     # p
     p = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.p[0], win_info.p[1], event_time)
+        tr_data, tr_sync, win_info.p[0], win_info.p[1], event_time, noise_average_energy)
     # s
     s = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.s[0], win_info.s[1], event_time)
+        tr_data, tr_sync, win_info.s[0], win_info.s[1], event_time, noise_average_energy)
     # pp
     pp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.pp[0], win_info.pp[1], event_time)
+        tr_data, tr_sync, win_info.pp[0], win_info.pp[1], event_time, noise_average_energy)
     # ss
     ss = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.ss[0], win_info.ss[1], event_time)
+        tr_data, tr_sync, win_info.ss[0], win_info.ss[1], event_time, noise_average_energy)
     # sp
     sp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.sp[0], win_info.sp[1], event_time)
+        tr_data, tr_sync, win_info.sp[0], win_info.sp[1], event_time, noise_average_energy)
     # scs
     scs = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.scs[0], win_info.scs[1], event_time)
+        tr_data, tr_sync, win_info.scs[0], win_info.scs[1], event_time, noise_average_energy)
     # rayleigh
     rayleigh = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.rayleigh[0], win_info.rayleigh[1], event_time)
+        tr_data, tr_sync, win_info.rayleigh[0], win_info.rayleigh[1], event_time, noise_average_energy)
     # love
     love = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.love[0], win_info.love[1], event_time)
+        tr_data, tr_sync, win_info.love[0], win_info.love[1], event_time, noise_average_energy)
     return (net_sta, comp, win(win_info.gcarc, win_info.comp, p, s, pp, ss, sp, scs, rayleigh, love))
 
 
