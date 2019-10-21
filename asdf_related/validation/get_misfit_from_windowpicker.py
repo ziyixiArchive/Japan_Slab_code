@@ -176,7 +176,7 @@ def main(data_fname, sync_fname, win_fname, output_fname):
         tr_data = data_asdf.waveforms[thekey[0]][data_tag]
         tr_sync = sync_asdf.waveforms[thekey[0]][sync_tag]
         kernel_info_list.append(
-            (thekey[0], thekey[1], windows[thekey]), tr_data, tr_sync)
+            (thekey[0], thekey[1], windows[thekey], tr_data, tr_sync))
 
     with Pool(48) as p:
         kernel_result = list(tqdm.tqdm(
