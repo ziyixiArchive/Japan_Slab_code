@@ -54,7 +54,7 @@ def init_structure(base, cmtfiles, ref, output):
 
     # mv DATA and utils to upper level
     sh.mv(join(base, "ref", "DATA"), base)
-    sh.mv(join(base, "ref", "utils"), base)
+    # sh.mv(join(base, "ref", "utils"), base)
 
     # get work directories' list
     dirs_raw = glob(join(cmtfiles, "*"))
@@ -66,7 +66,7 @@ def init_structure(base, cmtfiles, ref, output):
 
     # mv DATA and utils back to ref
     sh.mv(join(base, "DATA"), join(base, "ref", "DATA"))
-    sh.mv(join(base, "utils"), join(base, "ref", "utils"))
+    # sh.mv(join(base, "utils"), join(base, "ref", "utils"))
 
     # mkdir DATA in work directory
     for dir in dirs:
