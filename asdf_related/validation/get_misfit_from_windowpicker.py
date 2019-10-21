@@ -66,12 +66,14 @@ def read_asdf_files(data_fname, sync_fname):
     return data_asdf, sync_asdf
 
 
-def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime):
+def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_time):
     """
     Assume here we already have data and sync's traces matched.
     """
     if(starttime == None or endtime == None):
         return None, None
+    starttime = event_time+starttime
+    endtime = event_time+endtime
     con1 = (tr_data.stats.starttime > starttime-PADDING) or (
         tr_data.stats.endtime < endtime+PADDING)
     con2 = (tr_sync.stats.starttime > starttime) or (
@@ -109,28 +111,28 @@ def kernel(kernel_info,  event_time=None):
     # the processing scripts has already cut the starttime of the data and sync as the event time
     # p
     p = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.p[0], event_time+win_info.p[1])
+        tr_data, tr_sync, win_info.p[0], win_info.p[1], event_time)
     # s
     s = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.s[0], event_time+win_info.s[1])
+        tr_data, tr_sync, win_info.s[0], win_info.s[1], event_time)
     # pp
     pp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.pp[0], event_time+win_info.pp[1])
+        tr_data, tr_sync, win_info.pp[0], win_info.pp[1], event_time)
     # ss
     ss = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.ss[0], event_time+win_info.ss[1])
+        tr_data, tr_sync, win_info.ss[0], win_info.ss[1], event_time)
     # sp
     sp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.sp[0], event_time+win_info.sp[1])
+        tr_data, tr_sync, win_info.sp[0], win_info.sp[1], event_time)
     # scs
     scs = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.scs[0], event_time+win_info.scs[1])
+        tr_data, tr_sync, win_info.scs[0], win_info.scs[1], event_time)
     # rayleigh
     rayleigh = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.rayleigh[0], event_time+win_info.rayleigh[1])
+        tr_data, tr_sync, win_info.rayleigh[0], win_info.rayleigh[1], event_time)
     # love
     love = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, event_time+win_info.love[0], event_time+win_info.love[1])
+        tr_data, tr_sync, win_info.love[0], win_info.love[1], event_time)
     return (net_sta, comp, win(win_info.gcarc, win_info.comp, p, s, pp, ss, sp, scs, rayleigh, love))
 
 
