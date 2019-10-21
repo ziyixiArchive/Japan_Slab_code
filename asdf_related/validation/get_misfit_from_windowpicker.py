@@ -187,7 +187,7 @@ def main(data_fname, sync_fname, win_fname, output_fname):
             p.imap(partialed_kernel, kernel_info_list), total=len(kernel_info_list)))
 
     # save the result
-    save_result(kernel_result)
+    save_result(kernel_result, output_fname)
 
 
 if __name__ == "__main__":
