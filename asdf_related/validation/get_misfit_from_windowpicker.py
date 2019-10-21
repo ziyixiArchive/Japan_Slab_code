@@ -79,7 +79,7 @@ def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_t
     con2 = (tr_sync.stats.starttime > starttime) or (
         tr_sync.stats.endtime < endtime)
     if(con1 or con2):
-        return None, None
+        return None, None, None, None
     cc_data = tr_data.slice(starttime-PADDING, endtime+PADDING)
     cc_sync = tr_sync.slice(starttime, endtime)
     cc = correlate(cc_data, cc_sync, None, demean=False)
