@@ -224,6 +224,10 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 # plot texts
                 axz.text(0.90, 0.53, f"id:{each_plot_id}\ngcarc:{each_plot_trace.info['gcarc']:.2f}\nazimuth:{each_plot_trace.info['azimuth']:.2f}",
                          transform=axz.transAxes, fontsize=100)
+                axr.text(0.90, 0.53, f"id:{each_plot_id}\ngcarc:{each_plot_trace.info['gcarc']:.2f}\nazimuth:{each_plot_trace.info['azimuth']:.2f}",
+                         transform=axr.transAxes, fontsize=100)
+                axt.text(0.90, 0.53, f"id:{each_plot_id}\ngcarc:{each_plot_trace.info['gcarc']:.2f}\nazimuth:{each_plot_trace.info['azimuth']:.2f}",
+                         transform=axt.transAxes, fontsize=100)
 
                 # plot title
                 if(index_count == 2):
