@@ -172,11 +172,13 @@ def main(data_fname, sync_fname, win_fname, output_fname):
         kernel,  event_time=event_time)
 
     kernel_info_list = []
+    waveform_list = data_asdf.waveforms.list()
     for thekey in windows:
-        tr_data = data_asdf.waveforms[thekey[0]][data_tag]
-        tr_sync = sync_asdf.waveforms[thekey[0]][sync_tag]
-        kernel_info_list.append(
-            (thekey[0], thekey[1], windows[thekey], tr_data, tr_sync))
+        if(thekey[0] in waveform_list):
+            tr_data = data_asdf.waveforms[thekey[0]][data_tag]
+            tr_sync = sync_asdf.waveforms[thekey[0]][sync_tag]
+            kernel_info_list.append(
+                (thekey[0], thekey[1], windows[thekey], tr_data, tr_sync))
 
     with Pool(48) as p:
         kernel_result = list(tqdm.tqdm(
