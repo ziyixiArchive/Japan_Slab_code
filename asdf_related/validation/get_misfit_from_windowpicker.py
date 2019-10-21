@@ -121,7 +121,10 @@ def cal_noise_average_energy(tr_data, win_info, event_time):
         else:
             noise_start = 0
     noise_win_start = event_time+noise_start
-    noise_win_end = event_time+first_arrival-10
+    if(first_arrival > 10):
+        noise_win_end = event_time+first_arrival-10
+    else:
+        noise_win_end = event_time+first_arrival
     tr_noise = tr_data.slice(noise_win_start, noise_win_end)
     noise_average_energy = np.sum(tr_noise.data**2)/len(tr_noise.data)
     return noise_average_energy
