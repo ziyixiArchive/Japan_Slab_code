@@ -45,7 +45,12 @@ def init_structure(base, cmtfiles, ref, output):
     sh.rm("-rf", join(base, "ref", "EXAMPLES"))
     sh.rm("-rf", join(base, "ref", "OUTPUT_FILES"))
     sh.rm("-rf", join(base, "ref", "doc"))
-    sh.rm("-rf", join(base, "ref", "tests"))
+    sh.rm("-rf", join(base, "ref", "obj"))
+    sh.rm("-rf", join(base, "ref", "sbatch"))
+    sh.rm("-rf", join(base, "ref", "SEM"))
+    sh.rm("-rf", join(base, "ref", "setup"))
+    sh.rm("-rf", join(base, "ref", "src"))
+    sh.rm("-rf", join(base, "ref", "utils"))
 
     # mv DATA and utils to upper level
     sh.mv(join(base, "ref", "DATA"), base)
