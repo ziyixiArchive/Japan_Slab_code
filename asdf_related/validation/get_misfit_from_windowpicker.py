@@ -7,7 +7,7 @@ import obspy
 import pyasdf
 from collections import namedtuple
 from obspy.signal.cross_correlation import correlate, xcorr_max
-from multiprocess import Pool
+from multiprocessing import Pool
 import tqdm
 from functools import partial
 import pickle
