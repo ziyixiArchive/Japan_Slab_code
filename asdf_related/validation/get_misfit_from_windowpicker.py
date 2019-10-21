@@ -71,7 +71,7 @@ def cal_waveform_similarity_deltat(tr_data, tr_sync, starttime, endtime, event_t
     Assume here we already have data and sync's traces matched.
     """
     if(starttime == None or endtime == None):
-        return None, None
+        return None, None, None, None
     starttime = event_time+starttime
     endtime = event_time+endtime
     con1 = (tr_data.stats.starttime > starttime-PADDING) or (
