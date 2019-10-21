@@ -175,6 +175,18 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 obs = each_plot_trace.obs_t
                 syn1 = each_plot_trace.syn1_t
                 syn2 = each_plot_trace.syn2_t
+
+                # we should remove the abnormal at the two side
+                obs.detrend("demean")
+                obs.detrend("linear")
+                obs.taper(max_percentage=0.05, type="hann")
+                syn1.detrend("demean")
+                syn1.detrend("linear")
+                syn1.taper(max_percentage=0.05, type="hann")
+                syn2.detrend("demean")
+                syn2.detrend("linear")
+                syn2.taper(max_percentage=0.05, type="hann")
+
                 x_obs = np.linspace(0, obs.stats.endtime -
                                     obs.stats.starttime, obs.stats.npts)
                 x_syn1 = np.linspace(0, syn1.stats.endtime -
@@ -216,11 +228,11 @@ def main(obs_asdf, syn1_asdf, syn2_asdf, azimuth_width, output_pdf, waves_perpag
                 # plot title
                 if(index_count == 2):
                     axz.set_title(
-                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}", fontsize=200)
+                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}, vertical", fontsize=200)
                     axr.set_title(
-                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}", fontsize=200)
+                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}, radial", fontsize=200)
                     axt.set_title(
-                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}", fontsize=200)
+                        f"azimuth:{azimuth_width*index_azimuth}-{azimuth_width*(index_azimuth+1)}\npage:{ipage}, tagential", fontsize=200)
 
                 # plot travel times
                 info = each_plot_trace.info
