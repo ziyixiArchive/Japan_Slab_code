@@ -1,0 +1,59 @@
+If you know of any dataset that should be included (this means
+the dataset should be useful to several people at the Seismo Lab),
+or you know of any update to an existing data set, please let us
+know.
+
+Currently the following data sets are available:
+
+The original BOUND.90 file came by way of Peter Sloss at NOAA/NGDC in Boulder,
+Colorado, and was modified by Dr. Paul Wessel to  a multiple segment file,
+(lon/lat), suitable for plotting with the -M option in psxy.   However, the
+"HEADER LINE 2" was inadvertently left out of the modified "plate_boundaries"
+file.   For those of you who need the information that was in "HEADER LINE 2",
+
+        plate_boundaries.codes
+
+combines both (HEADER LINE 1) and (the codes in HEADER LINE 2) into a
+single record which begins with the multiple segment flag.
+
+*****************************************************************************
+* Information on the original BOUND.90 file follows:
+*****************************************************************************
+* 
+* Source: Paleo-Oceanographic Mapping Project (University of Texas at Austin)
+* Data Manager: Lisa Gahagan, (512) 471-0488
+* 
+* Each boundary has a 2 line header, followed by a string of lats, longs,
+* and pen movements (2 = pen down, or connect to previous point, 3 = pen up,
+* or start a new line segment).  A lat, long of 99.000, 99.000 signifies
+* the end of the string for that boundary.  
+* 
+* HEADER LINE 1:
+*         Reference number for location and source (see file ref.lis)
+*         Plate boundary number
+*         Name of boundary
+* 
+* HEADER LINE 2:
+*         Reference number for plate
+*         Time of appearance (mya)
+*         Time of disappearance (mya)* 
+*         Boundary Type Code:
+*                 FZ = fracture zone
+*                 RI = ridge
+*                 SS = strike-slip
+*                 TF = transform fault
+*                 TR = trench
+*                 etc. (see file ref.lis)
+*         Magnetic anomaly code*
+*         Plate code*
+*         Color code for plotting*
+*         
+* * signifies these codes are inappropriate for this data set (POMP
+* maintains other files of past isochrons in this format)
+* 
+*****************************************************************************
+Magali Billen (magali@gps)
+Jascha Polet (polet@gps)
+
+*******************************************************************************
+Last update August 19, 1997  by Jascha Polet

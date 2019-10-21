@@ -1,0 +1,18 @@
+Carl Tape, Dec 2005
+carltape@gps.caltech.edu
+
+This directory contains the "generic" plate boundaries file [plate_boundaries],
+which has an unknown origin (Peter Sloss?).
+
+The directory /home/datalib/Plate_Kinematic_Models/ contains sets of plates,
+along with euler vectors describing the motion of the plates.
+
+I copied the Bird plates here [bird_boundaries].
+
+I'm not sure where [nuvel1_boundaries] came from, although the boundaries
+are not consistent with the NUVEL-1 paper (1990), which has 14 plates.
+
+The directory /home/datalib/Seafloor_Age/plate_polygons
+also contains a set of plate polygons.
+
+Please let me know if you find additional models to include.

@@ -1,0 +1,13 @@
+Carl Tape
+08-Jan-2007
+
+Files taken from Mark Simons:
+/home/chikyu3/simons/TPGA/TRENCH/
+
+Adaptations:
+
+(1) Create file for reading into GMT.
+
+  (a) more *lonlat > simons_grav_sub_zones_LUR
+  (b) Remove :::::::::::::: lines
+  (c) Replace "aleutian.lonlat" with "> aleutian.lonlat"
