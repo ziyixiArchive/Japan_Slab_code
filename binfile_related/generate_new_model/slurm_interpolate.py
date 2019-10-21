@@ -14,6 +14,6 @@ output_dir = "/scratch/05880/tg851791/work/generate_small_v703/perturbation/per_
 command1 = f"ibrun julia ../specfem_gll.jl/src/program/xsem_interp_mesh2.jl --nproc_old {nproc_old} --old_mesh_dir {old_mesh_dir} --old_model_dir {old_model_dir} --nproc_new {nproc_new} --new_mesh_dir {new_mesh_dir} --new_model_dir {new_model_dir} --model_tags {model_tags} --output_dir {output_dir}"
 
 s = Slurm("interp", {"partition": "skx-normal",
-                     "nodes": 7, "ntasks": 324, "time": "00:60:00", "account": "TG-EAR140030"})
+                     "nodes": 10, "ntasks": 324, "time": "00:60:00", "account": "TG-EAR140030"})
 
 s.run(f"date; {command1}; date;")
