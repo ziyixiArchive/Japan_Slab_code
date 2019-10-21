@@ -100,11 +100,11 @@ def get_tags(data_asdf, sync_asdf):
     return data_tag, sync_tag
 
 
-def kernel(kernel_info, data_asdf=None, sync_asdf=None, data_tag=None, sync_tag=None, event_time=None):
+def kernel(kernel_info,  event_time=None):
     # here the kcomp is just a number labeled as: 0 R 1 T 2 Z
-    net_sta, comp, win_info = kernel_info
-    tr_data = data_asdf.waveforms[net_sta][data_tag][comp]
-    tr_sync = sync_asdf.waveforms[net_sta][sync_tag][comp]
+    net_sta, comp, win_info, tr_data_st, tr_sync_st = kernel_info
+    tr_data = tr_data_st[comp]
+    tr_sync = tr_sync_st[comp]
     # here the win_info is just a win tuple, we use the same tuple to output the result
     # the processing scripts has already cut the starttime of the data and sync as the event time
     # p
@@ -169,11 +169,14 @@ def main(data_fname, sync_fname, win_fname, output_fname):
 
     kernel_result = None
     partialed_kernel = partial(
-        kernel, data_asdf=data_asdf, sync_asdf=sync_asdf, data_tag=data_tag, sync_tag=sync_tag, event_time=event_time)
+        kernel,  event_time=event_time)
 
     kernel_info_list = []
     for thekey in windows:
-        kernel_info_list.append((thekey[0], thekey[1], windows[thekey]))
+        tr_data = data_asdf.waveforms[thekey[0]][data_tag]
+        tr_sync = sync_asdf.waveforms[thekey[0]][sync_tag]
+        kernel_info_list.append(
+            (thekey[0], thekey[1], windows[thekey]), tr_data, tr_sync)
 
     with Pool(48) as p:
         kernel_result = list(tqdm.tqdm(
