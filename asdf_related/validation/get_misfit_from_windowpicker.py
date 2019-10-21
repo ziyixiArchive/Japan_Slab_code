@@ -109,28 +109,28 @@ def kernel(kernel_info,  event_time=None):
     # the processing scripts has already cut the starttime of the data and sync as the event time
     # p
     p = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.p[0]+event_time, win_info.p[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.p[0], event_time+win_info.p[1])
     # s
     s = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.s[0]+event_time, win_info.s[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.s[0], event_time+win_info.s[1])
     # pp
     pp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.pp[0]+event_time, win_info.pp[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.pp[0], event_time+win_info.pp[1])
     # ss
     ss = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.ss[0]+event_time, win_info.ss[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.ss[0], event_time+win_info.ss[1])
     # sp
     sp = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.sp[0]+event_time, win_info.sp[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.sp[0], event_time+win_info.sp[1])
     # scs
     scs = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.scs[0]+event_time, win_info.scs[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.scs[0], event_time+win_info.scs[1])
     # rayleigh
     rayleigh = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.rayleigh[0]+event_time, win_info.rayleigh[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.rayleigh[0], event_time+win_info.rayleigh[1])
     # love
     love = cal_waveform_similarity_deltat(
-        tr_data, tr_sync, win_info.love[0]+event_time, win_info.love[1]+event_time)
+        tr_data, tr_sync, event_time+win_info.love[0], event_time+win_info.love[1])
     return (net_sta, comp, win(win_info.gcarc, win_info.comp, p, s, pp, ss, sp, scs, rayleigh, love))
 
 
