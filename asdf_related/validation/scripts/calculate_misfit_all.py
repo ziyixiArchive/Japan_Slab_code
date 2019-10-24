@@ -46,4 +46,4 @@ def main(each_gcmtid):
 
 
 if __name__ == "__main__":
-    main("201201010527A")
+    main("201608041624A")
