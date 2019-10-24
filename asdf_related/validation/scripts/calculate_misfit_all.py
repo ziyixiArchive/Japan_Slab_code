@@ -1,7 +1,6 @@
 from glob import glob
 from os.path import join, basename
 import subprocess
-import multiprocess
 
 all_models = ["crust1_stw105_processed",
               "EARA2014_nosmooth_crust2.0_processed",
