@@ -12,5 +12,5 @@ all_gcmt_ids = [item.split(".")[0] for item in all_win_fnames]
 all_from_paths = [join(from_dir, f"raw_{item}*") for item in all_gcmt_ids]
 
 for from_path in all_from_paths:
-    command = f"cp {from_path} {to_dir}"
+    command = f"cp {from_path} {to_dir}/"
     subprocess.call(command)
