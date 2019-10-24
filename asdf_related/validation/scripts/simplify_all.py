@@ -5,7 +5,7 @@ import subprocess
 work_dir = "/mnt/scratch/xiziyi/validation/data"
 output_dir = "/mnt/scratch/xiziyi/validation/data_simple"
 
-all_paths = glob(work_dir, "*")
+all_paths = glob(join(work_dir, "*"))
 
 for each_path in all_paths:
     thebasename = basename(each_path)
