@@ -150,10 +150,10 @@ def main(region, rawregion, data, parameter, npts):
     else:
         vmax = vmax_round+0.01
     # ! set vmin and vmax here
-    vmin = 4.9
-    vmax = 5.5
+    vmin = 2.0
+    vmax = 6.5
 
-    v = np.arange(vmin, vmax, 0.1)
+    v = np.arange(vmin, vmax, 0.5)
 
     if(plot_vertically):
         # decide to use lat or lon
@@ -173,7 +173,7 @@ def main(region, rawregion, data, parameter, npts):
         plt.colorbar(ticks=v, label="perturbation")
         plt.gca().invert_yaxis()
         plt.xlabel(
-            f"{plot_on}(°) between (lon: {minlon}°, lat: {minlat}°) and (lon: {maxlon}°, lat: {maxlat}°)")
+            f"{plot_on}(°)\n between (lon: {minlon:.2f}°, lat: {minlat:.2f}°) and (lon: {maxlon:.2f}°, lat: {maxlat:.2f}°)")
         plt.ylabel("depth(km)")
         plt.title(f"parameter: {parameter}")
         plt.show()
