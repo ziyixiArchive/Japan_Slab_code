@@ -41,6 +41,7 @@ def kernel(each_gcmtid):
 def main(each_gcmtid):
     for each_model in all_models:
         command = f"mkdir -p {join(output_dir,each_model)}"
+        subprocess.call(command, shell=True)
     kernel(each_gcmtid)
 
 
