@@ -212,7 +212,7 @@ def main(data_fname, sync_fname, win_fname, output_fname):
             kernel_info_list.append(
                 (thekey[0], thekey[1], windows[thekey], tr_data, tr_sync))
 
-    with Pool(48) as p:
+    with Pool(36) as p:
         kernel_result = list(tqdm.tqdm(
             p.imap(partialed_kernel, kernel_info_list), total=len(kernel_info_list)))
 
