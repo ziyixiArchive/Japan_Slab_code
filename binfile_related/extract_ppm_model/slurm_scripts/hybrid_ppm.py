@@ -3,13 +3,13 @@ from slurmpy import Slurm
 # paths and constant values
 nproc_old = 441  # number of processors used in bin files
 old_mesh_dir = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/control_file/s362ani_bad"  # the mesh files
-old_model_dir = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/model/s362ani_good_min_tao_smooth"  # the model files
+old_model_dir = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/perturbation/per_s362ani_good_min_tao_smooth__taoref_crust1.0"  # the model files
 model_tags = "vpv,vph,vsv,vsh,eta,qmu,rho"  # vlues to generate
 # output directory
-output_file = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/ppm/hybrid"
+output_file = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/ppm/hybrid_per_tao"
 # region as lon1/lat1/lon2/lat2/dep1/dep2 (eg: if lon1=30, lon2=20, get points like 30, 29, ...)
 region = "74/0/175/62/0/800"
-npts = "249/405/81"  # number of poins, including the edge points.
+npts = "249/405/161"  # number of poins, including the edge points.
 # use 18*18 cores, can be set anyway you like. (two directions, divide subregions)
 nproc = "21/21"
 
@@ -20,6 +20,6 @@ command += "date;"
 
 # run 2h18min for my region, 60d*60d, 336*336NEX 21*21 proc. It's safe to set a longer time.
 s = Slurm("ppm", {"partition": "skx-normal",
-                  "nodes": 10, "ntasks": 324, "time": "05:00:00", "account": "TG-EAR130011"})
+                  "nodes": 10, "ntasks": 324, "time": "02:00:00", "account": "TG-EAR130011"})
 
 s.run(command)
