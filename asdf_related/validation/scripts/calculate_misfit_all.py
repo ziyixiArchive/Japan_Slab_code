@@ -17,7 +17,7 @@ sync_dir = "/mnt/scratch/xiziyi/validation/sync"
 win_dir = "/mnt/scratch/xiziyi/validation/win"
 output_dir = "/mnt/scratch/xiziyi/validation/misfit"
 
-process_flags = ["preprocessed_20s_to_120s"]
+process_flags = ["preprocessed_40s_to_120s", "preprocessed_10s_to_120s"]
 
 
 all_win_paths = glob(join(win_dir, "*"))

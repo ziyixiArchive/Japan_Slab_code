@@ -75,6 +75,6 @@ EOF
     gmt meca  -Sd0.2c/0.05c -M -Cblack ../data/validation_event.txt
 
     # plate boundaries
-    gmt psxy -Wfaint,0/0/255,..- ../gmt_database/Plate_Boundaries/nuvel1_boundaries
+    gmt psxy -Wthick,0/0/255,..- ../gmt_database/Plate_Boundaries/nuvel1_boundaries
     # gmt psxy ../gmt_database/japan_slab_contour -W0.7p -C../gmt_database/cpts/slab.cpt -V
 gmt end
