@@ -9,7 +9,7 @@ model_tags = "vpv,vph,vsv,vsh,eta,qmu,rho"  # vlues to generate
 output_file = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/ppm/hybrid_per_tao"
 # region as lon1/lat1/lon2/lat2/dep1/dep2 (eg: if lon1=30, lon2=20, get points like 30, 29, ...)
 region = "74/0/175/62/0/800"
-npts = "249/405/161"  # number of poins, including the edge points.
+npts = "249/405/101"  # number of poins, including the edge points.
 # use 18*18 cores, can be set anyway you like. (two directions, divide subregions)
 nproc = "21/21"
 
