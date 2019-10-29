@@ -150,10 +150,11 @@ def main(region, rawregion, data, parameter, npts):
     else:
         vmax = vmax_round+0.01
     # ! set vmin and vmax here
-    vmin = 2.0
-    vmax = 6.5
+    print(vmax, vmin)
+    vmin = -0.1
+    vmax = 0.1
 
-    v = np.arange(vmin, vmax, 0.5)
+    v = np.arange(vmin, vmax, 0.01)
 
     if(plot_vertically):
         # decide to use lat or lon
