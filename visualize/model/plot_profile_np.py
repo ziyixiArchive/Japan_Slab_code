@@ -132,7 +132,7 @@ def main(region, rawregion, data, parameter, npts):
 
     # build up the interpolation function
     interpolating_function = RegularGridInterpolator(
-        (lon_list, lat_list, dep_list), data, method="nearest")
+        (lon_list, lat_list, dep_list), data, method="linear")
     plot_values = interpolating_function(array_to_interpolate)
 
     # * plot figures
