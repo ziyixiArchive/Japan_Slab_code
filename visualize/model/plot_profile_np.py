@@ -151,8 +151,8 @@ def main(region, rawregion, data, parameter, npts):
         vmax = vmax_round+0.01
     # ! set vmin and vmax here
     print(vmax, vmin)
-    vmin = -0.1
-    vmax = 0.1
+    # vmin = -0.1
+    # vmax = 0.1
 
     v = np.arange(vmin, vmax, 0.01)
 
