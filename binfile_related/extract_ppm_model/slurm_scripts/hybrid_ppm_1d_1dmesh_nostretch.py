@@ -19,7 +19,7 @@ command += f"ibrun julia ../../specfem_gll.jl/src/program/get_ppm_model.jl --npr
 command += "date;"
 
 # run 2h18min for my region, 60d*60d, 336*336NEX 21*21 proc. It's safe to set a longer time.
-s = Slurm("ppm", {"partition": "development",
+s = Slurm("ppm", {"partition": "normal",
                   "nodes": 5, "ntasks": 324, "time": "02:00:00", "account": "TG-EAR140030"})
 
 s.run(command)
