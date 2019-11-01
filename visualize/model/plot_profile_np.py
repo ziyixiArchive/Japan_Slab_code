@@ -8,7 +8,7 @@ import numba
 import tqdm
 from scipy.interpolate import RegularGridInterpolator
 
-resolution = 101
+resolution = 1001
 
 
 def prepare_mesh(data, rawminlon, rawmaxlon, rawminlat, rawmaxlat, rawmindep, rawmaxdep):
@@ -108,19 +108,38 @@ def main(region, rawregion, data, parameter, npts):
     # get mesh to plot
     print("interp values:")
     lat_mesh, lon_mesh, dep_mesh = None, None, None
-    plot_values = np.zeros((hnpts, vnpts))
-    array_to_interpolate = np.zeros((hnpts, vnpts, 3))
+
+    # in order to handle the problem in the 410 and 660 interface, reduce the resoultion at these two interfaces
+    # use the space calculated, and from 400-420, 650-670, we use only the boundary point
+    plot_values = None
+    array_to_interpolate = None
     if(plot_vertically):
+        min_410 = 395
+        max_410 = 425
+        min_660 = 650
+        max_660 = 690
+        dep_mesh = np.linspace(mindep, maxdep, vnpts)
+        dep_mesh_new = []
+        for each_value in dep_mesh:
+            if((min_410 < each_value < max_410) or (min_660 < each_value < max_660)):
+                pass
+            else:
+                dep_mesh_new.append(each_value)
+        dep_mesh = np.array(dep_mesh_new)
+
+        plot_values = np.zeros((hnpts, len(dep_mesh)))
+        array_to_interpolate = np.zeros((hnpts, len(dep_mesh), 3))
         lat_mesh = np.linspace(minlat, maxlat, hnpts)
         lon_mesh = np.linspace(minlon, maxlon, hnpts)
-        dep_mesh = np.linspace(mindep, maxdep, vnpts)
         for ih in tqdm.tqdm(range(hnpts)):
-            for iv in range(vnpts):
+            for iv in range(len(dep_mesh)):
                 # plot_values[ih, iv] = interp_value(
                 #     lat_mesh[ih], lon_mesh[ih], dep_mesh[iv], x_mesh, y_mesh, z_mesh, data)
                 array_to_interpolate[ih, iv, :] = [
                     lon_mesh[ih], lat_mesh[ih], dep_mesh[iv]]
     else:
+        plot_values = np.zeros((hnpts, vnpts))
+        array_to_interpolate = np.zeros((hnpts, vnpts, 3))
         lat_mesh = np.linspace(minlat, maxlat, vnpts)
         lon_mesh = np.linspace(minlon, maxlon, hnpts)
         for ih in tqdm.tqdm(range(hnpts)):
@@ -132,7 +151,7 @@ def main(region, rawregion, data, parameter, npts):
 
     # build up the interpolation function
     interpolating_function = RegularGridInterpolator(
-        (lon_list, lat_list, dep_list), data, method="linear")
+        (lon_list, lat_list, dep_list), data, method="nearest")
     plot_values = interpolating_function(array_to_interpolate)
 
     # * plot figures
@@ -151,8 +170,6 @@ def main(region, rawregion, data, parameter, npts):
         vmax = vmax_round+0.01
     # ! set vmin and vmax here
     print(vmax, vmin)
-    # vmin = -0.1
-    # vmax = 0.1
 
     v = np.arange(vmin, vmax, 0.01)
 
