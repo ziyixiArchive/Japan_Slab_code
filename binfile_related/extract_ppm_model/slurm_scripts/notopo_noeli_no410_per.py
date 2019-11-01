@@ -20,6 +20,6 @@ command += "date;"
 
 # run 2h18min for my region, 60d*60d, 336*336NEX 21*21 proc. It's safe to set a longer time.
 s = Slurm("ppm", {"partition": "normal",
-                  "nodes": 5, "ntasks": 324, "time": "04:00:00", "account": "TG-EAR140030"})
+                  "nodes": 5, "ntasks": 324, "time": "04:00:00", "account": "TG-EAR130011"})
 
 s.run(command)
