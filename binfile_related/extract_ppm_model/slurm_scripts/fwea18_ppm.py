@@ -11,7 +11,7 @@ output_file = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/ppm/fw
 region = "90/10/150/60/0/800"
 npts = "201/241/321"  # number of poins, including the edge points.
 # use 18*18 cores, can be set anyway you like. (two directions, divide subregions)
-nproc = "18/18"
+nproc = "30/30"
 
 command = "date;"
 # check if ../../specfem_gll.jl/src/program/get_ppm_model.jl is actually the path of get_ppm_model.jl
@@ -20,6 +20,6 @@ command += "date;"
 
 # run 2h18min for my region, 60d*60d, 336*336NEX 21*21 proc. It's safe to set a longer time.
 s = Slurm("interp", {"partition": "development",
-                     "nodes": 5, "ntasks": 324, "time": "04:00:00", "account": "TG-EAR130011"})
+                     "nodes": 14, "ntasks": 900, "time": "02:00:00", "account": "TG-EAR130011"})
 
 s.run(command)
