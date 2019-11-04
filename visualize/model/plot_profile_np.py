@@ -114,10 +114,10 @@ def main(region, rawregion, data, parameter, npts):
     plot_values = None
     array_to_interpolate = None
     if(plot_vertically):
-        min_410 = 395
-        max_410 = 425
-        min_660 = 650
-        max_660 = 690
+        min_410 = 409  # 400
+        max_410 = 411  # 425
+        min_660 = 649  # 640
+        max_660 = 651  # 665
         dep_mesh = np.linspace(mindep, maxdep, vnpts)
         dep_mesh_new = []
         for each_value in dep_mesh:
@@ -151,7 +151,7 @@ def main(region, rawregion, data, parameter, npts):
 
     # build up the interpolation function
     interpolating_function = RegularGridInterpolator(
-        (lon_list, lat_list, dep_list), data, method="nearest")
+        (lon_list, lat_list, dep_list), data, method="linear")
     plot_values = interpolating_function(array_to_interpolate)
 
     # * plot figures
@@ -170,6 +170,8 @@ def main(region, rawregion, data, parameter, npts):
         vmax = vmax_round+0.01
     # ! set vmin and vmax here
     print(vmax, vmin)
+    # vmin = -0.06
+    # vmax = 0.06
 
     v = np.arange(vmin, vmax, 0.01)
 
