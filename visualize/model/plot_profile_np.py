@@ -8,7 +8,7 @@ import numba
 import tqdm
 from scipy.interpolate import RegularGridInterpolator
 
-resolution = 1001
+resolution = 101
 
 
 def prepare_mesh(data, rawminlon, rawmaxlon, rawminlat, rawmaxlat, rawmindep, rawmaxdep):
@@ -114,10 +114,10 @@ def main(region, rawregion, data, parameter, npts):
     plot_values = None
     array_to_interpolate = None
     if(plot_vertically):
-        min_410 = 409  # 400
-        max_410 = 411  # 425
-        min_660 = 649  # 640
-        max_660 = 651  # 665
+        min_410 = 407  # 400
+        max_410 = 413  # 425
+        min_660 = 647  # 640
+        max_660 = 653  # 665
         dep_mesh = np.linspace(mindep, maxdep, vnpts)
         dep_mesh_new = []
         for each_value in dep_mesh:
