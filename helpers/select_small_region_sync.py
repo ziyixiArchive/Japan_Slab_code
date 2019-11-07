@@ -1,7 +1,7 @@
 from os.path import join,basename
 from glob import glob
 import subprocess
-from glob import glob
+from tqdm import tqdm
 
 sync_dir="/scratch/05880/tg851791/asdf_sync_small_region/output/OUTPUT_FILES"
 output_dir="/scratch/05880/tg851791/sac_files_for_small_region/sync_small"
