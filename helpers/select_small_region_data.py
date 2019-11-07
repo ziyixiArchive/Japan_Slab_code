@@ -27,7 +27,10 @@ for each_gcmtid in tqdm(all_gcmtids):
     for each_file in all_sac_files:
         thebase=basename(each_file)
         fname_spliter=thebase.split(".")
-        thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        try:
+            thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        except:
+            thekey=None
         if(thekey in pairs):
             out_path=join(output_dir,each_gcmtid,thebase)
             command=f"mv {each_file} {out_path}"
@@ -39,7 +42,10 @@ for each_gcmtid in tqdm(all_gcmtids):
     for each_file in all_pz_files:
         thebase=basename(each_file)
         fname_spliter=thebase.split(".")
-        thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        try:
+            thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        except:
+            thekey=None
         if(thekey in pairs):
             out_path=join(output_dir,each_gcmtid,"PZ",thebase)
             command=f"mv {each_file} {out_path}"
@@ -51,7 +57,10 @@ for each_gcmtid in tqdm(all_gcmtids):
     for each_file in all_pz_files:
         thebase=basename(each_file)
         fname_spliter=thebase.split(".")
-        thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        try:
+            thekey=".".join([fname_spliter[0],fname_spliter[1]])
+        except:
+            thekey=None
         if(thekey in pairs):
             out_path=join(output_dir,each_gcmtid,"extra",thebase)
             command=f"mv {each_file} {out_path}"
