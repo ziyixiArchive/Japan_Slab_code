@@ -4,7 +4,7 @@ import subprocess
 from glob import glob
 from tqdm import tqdm
 
-station_path="/scratch/05880/tg851791/asdf_sync_small_region/ref/DATA"
+station_path="/scratch/05880/tg851791/asdf_sync_small_region/ref/DATA/STATIONS"
 data_dir="/scratch/05880/tg851791/sac_files_for_small_region/data"
 output_dir="/scratch/05880/tg851791/sac_files_for_small_region/data_small"
 
