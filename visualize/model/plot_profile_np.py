@@ -8,7 +8,7 @@ import numba
 import tqdm
 from scipy.interpolate import RegularGridInterpolator
 
-resolution = 101
+resolution = 13
 
 
 def prepare_mesh(data, rawminlon, rawmaxlon, rawminlat, rawmaxlat, rawmindep, rawmaxdep):
@@ -116,8 +116,8 @@ def main(region, rawregion, data, parameter, npts):
     if(plot_vertically):
         min_410 = 407  # 400
         max_410 = 413  # 425
-        min_660 = 647  # 640
-        max_660 = 653  # 665
+        min_660 = 641  # 640
+        max_660 = 659  # 665
         dep_mesh = np.linspace(mindep, maxdep, vnpts)
         dep_mesh_new = []
         for each_value in dep_mesh:
@@ -210,6 +210,9 @@ def main(region, rawregion, data, parameter, npts):
             f"latitude(°) between {minlat}° and {maxlat}°")
         plt.title(f"depth: {mindep}km, parameter: {parameter}")
         plt.show()
+        # import matplotlib
+        # matplotlib.use('agg')
+        # plt.savefig("./cross_section.png")
 
 
 if __name__ == "__main__":
