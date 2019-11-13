@@ -4,7 +4,7 @@ from slurmpy import Slurm
 nproc_old = 441  # number of processors used in bin files
 old_mesh_dir = "/scratch/05880/tg851791/asdf_sync/model_generating/tao_1d_ref_knl/DATABASES_MPI"  # the mesh files
 old_model_dir = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/model/s362ani_good_tao"  # the model files
-model_tags = "vpv,vph,vsv,vsh,eta,qmu,rho"  # vlues to generate
+model_tags = "vpv,vph,vsv,vsh,eta,qmu,rho"  # vlues to generate 
 # output directory
 output_file = "/scratch/05880/tg851791/work/generate_hybrid_v703/gll_work/ppm/notopo/3d_nosmooth"
 # region as lon1/lat1/lon2/lat2/dep1/dep2 (eg: if lon1=30, lon2=20, get points like 30, 29, ...)
