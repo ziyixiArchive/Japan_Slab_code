@@ -19,10 +19,9 @@ def main(work_dir):
         each_fname = basename(each_asdf_path)
         each_gcmtid = each_fname.split(".")[0]
         gcmt_event = obspy.read_events(join(cmt_dir, each_gcmtid))
-        used_event = obspy.read_events(gcmt_event)
 
         with pyasdf.ASDFDataSet(each_asdf_path) as data:
-            data.events = used_event
+            data.events = gcmt_event
 
 
 if __name__ == "__main__":
