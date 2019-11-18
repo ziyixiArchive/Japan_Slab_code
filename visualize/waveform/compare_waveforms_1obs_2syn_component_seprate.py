@@ -328,28 +328,5 @@ def plot_travel_times(ax, phasename, traveltime, length, thecolor, twin_label):
         twin_label.append((traveltime, phasename))
 
 
-def plot_windows(ax, phasename, win, thecolor):
-    if(type(win) == type(None)):
-        return
-    mapper = {
-        "p": (3, 4),
-        "s": (5, 6),
-        "pp": (7, 8),
-        "ss": (9, 10),
-        "sp": (11, 12),
-        "scs": (13, 14),
-        "rayleigh": (15, 16),
-        "love": (17, 18)
-    }
-    start_time = win[mapper[phasename][0]]
-    end_time = win[mapper[phasename][1]]
-    if(start_time == "None" or end_time == "None"):
-        return
-    else:
-        start_time = float(start_time)
-        end_time = float(end_time)
-        ax.axvspan(start_time, end_time, alpha=0.1, color=thecolor)
-
-
 if __name__ == "__main__":
     main()
