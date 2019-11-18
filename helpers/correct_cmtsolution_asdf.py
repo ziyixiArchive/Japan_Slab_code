@@ -6,6 +6,7 @@ import pyasdf
 from glob import glob
 from os.path import join, basename
 import tqdm
+import click
 
 cmt_dir = "/mnt/research/seismolab2/japan_slab/cmts/Japan_slab_from_used_EARA2014"
 
