@@ -6,12 +6,12 @@ from slurmpy import Slurm
 
 # some resources information
 N_cores = 40
-N_node = 2
-N_cores_each_node = 20
+N_node = 1
+N_cores_each_node = 40
 
 # the base sync directory storing asdf files
-N_files = 4
-N_iters = 2
+N_files = 1
+N_iters = 1
 
 # some configuration
 PY = "/mnt/home/xiziyi/anaconda3/envs/seismology/bin/python"
@@ -19,9 +19,9 @@ min_periods = "10,20,40"
 max_periods = "120,120,120"
 waveform_length = 1800
 sampling_rate = 10
-logfile = "/mnt/scratch/xiziyi/process_data/process_data_284_test.log"
-RAW_DIR = "/mnt/scratch/xiziyi/process_data/asdf_all_284_test"
-PROCESSED_DIR = "/mnt/scratch/xiziyi/process_data/asdf_all_284_processed_test"
+logfile = "/mnt/scratch/xiziyi/process_data/process_fig15.log"
+RAW_DIR = "/mnt/scratch/xiziyi/process_data/fig15"
+PROCESSED_DIR = "/mnt/scratch/xiziyi/process_data/process_fig15"
 cea_correction_file = "./cmpaz_segment.txt"
 
 
@@ -52,7 +52,7 @@ def get_scripts(run_files):
 
 def submit_job(thecommand):
     s = Slurm("process_data", {"nodes": N_node, "ntasks": N_cores,
-                               "time": "01:00:00", "cpus-per-task": 1, "mem-per-cpu": "4G"})
+                               "time": "01:00:00", "cpus-per-task": 1, "mem-per-cpu": "2G"})
     s.run(thecommand)
 
 
