@@ -6,7 +6,7 @@ from glob import glob
 import click
 import subprocess
 from os.path import join, basename
-from .simplify_data_after_process import work
+from simplify_data_after_process import work
 
 # PY = "/mnt/home/xiziyi/anaconda3/envs/seismology/bin/python"
 
