@@ -7,6 +7,7 @@ import click
 import subprocess
 from os.path import join, basename
 from simplify_data_after_process import work
+import multiprocessing
 
 # PY = "/mnt/home/xiziyi/anaconda3/envs/seismology/bin/python"
 
@@ -17,14 +18,26 @@ def run_single(asdf_file, logfile, output_file):
     work(asdf_file, logfile, output_file)
 
 
+def kernel(info):
+    asdf_file, log_file, output_file = info
+    run_single(asdf_file, log_file, output_file)
+
+
 def run_all(base_dir, log_file, output_dir):
     allfiles = glob(join(base_dir, "*h5"))
     allfnames = [basename(item) for item in allfiles]
     alloutputs = [join(output_dir, fname) for fname in allfnames]
 
+    # for asdf_file, output_file in zip(allfiles, alloutputs):
+    #     print(asdf_file)
+    #     run_single(asdf_file, log_file, output_file)
+
+    # build the iterable list
+    info_list = []
     for asdf_file, output_file in zip(allfiles, alloutputs):
-        print(asdf_file)
-        run_single(asdf_file, log_file, output_file)
+        info_list.append((asdf_file, log_file, output_file))
+    with multiprocessing.Pool(processes=30) as pool:
+        pool.map(kernel, info_list)
 
 
 @click.command()
