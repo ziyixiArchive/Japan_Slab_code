@@ -41,7 +41,7 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
     thebasename=basename(asdf_path)
     gcmtid=thebasename.split(".")[0]
     tag=thebasename.split(".")[1]
-    for net_sta in all_stations:
+    for net_sta in list(stations_mapper.keys()):
         # z
         tr=asdf_file.waveforms[net_sta][tag].select(component="Z")[0].copy()
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
