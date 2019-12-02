@@ -45,6 +45,8 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
     for net_sta in sorted(avaliable_net_sta):
         # z
         tr=asdf_file.waveforms[net_sta][tag].select(component="Z")[0].copy()
+        tr.write(join(output_dir,tr.id),format="SAC")
+        tr=obspy.read(join(output_dir,tr.id))[0]
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
         tr.stats.sac.baz=baz_dict[gcmtid][net_sta]
         tr.stats.sac.evdp=evdp_dict[gcmtid][net_sta]
@@ -63,6 +65,8 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
 
         # r
         tr=asdf_file.waveforms[net_sta].select(component="R")[0].copy()
+        tr.write(join(output_dir,tr.id),format="SAC")
+        tr=obspy.read(join(output_dir,tr.id))[0]
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
         tr.stats.sac.baz=baz_dict[gcmtid][net_sta]
         tr.stats.sac.evdp=evdp_dict[gcmtid][net_sta]
@@ -81,6 +85,8 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
 
         # t
         tr=asdf_file.waveforms[net_sta].select(component="T")[0].copy()
+        tr.write(join(output_dir,tr.id),format="SAC")
+        tr=obspy.read(join(output_dir,tr.id))[0]
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
         tr.stats.sac.baz=baz_dict[gcmtid][net_sta]
         tr.stats.sac.evdp=evdp_dict[gcmtid][net_sta]
