@@ -33,8 +33,8 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
     evla_dict=load_pickle(join(data_info_dir,"extra.evla.pkl"))
     evlo_dict=load_pickle(join(data_info_dir,"extra.evlo.pkl"))
     gcarc_dict=load_pickle(join(data_info_dir,"extra.gcarc.pkl"))
-    t1_dict=load_pickle(join(data_info_dir,"extra.P.pkl"))
-    t2_dict=load_pickle(join(data_info_dir,"extra.S.pkl"))
+    t1_dict=load_pickle(join(data_info_dir,"traveltime.P.pkl"))
+    t2_dict=load_pickle(join(data_info_dir,"traveltime.S.pkl"))
 
     asdf_file=pyasdf.ASDFDataSet(asdf_path,mode="r")
     all_stations=asdf_file.waveforms.list()
