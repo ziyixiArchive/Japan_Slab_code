@@ -64,7 +64,7 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
         tr.write(join(output_dir,tr.id),format="SAC")
 
         # r
-        tr=asdf_file.waveforms[net_sta].select(component="R")[0].copy()
+        tr=asdf_file.waveforms[net_sta][tag].select(component="R")[0].copy()
         tr.write(join(output_dir,tr.id),format="SAC")
         tr=obspy.read(join(output_dir,tr.id))[0]
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
@@ -84,7 +84,7 @@ def main(asdf_path,data_info_dir,stations_fname,output_dir):
         tr.write(join(output_dir,tr.id),format="SAC")
 
         # t
-        tr=asdf_file.waveforms[net_sta].select(component="T")[0].copy()
+        tr=asdf_file.waveforms[net_sta][tag].select(component="T")[0].copy()
         tr.write(join(output_dir,tr.id),format="SAC")
         tr=obspy.read(join(output_dir,tr.id))[0]
         tr.stats.sac.az=az_dict[gcmtid][net_sta]
