@@ -64,3 +64,6 @@ def main(base_dir, region, npts, nproc, parameters, out_path,history):
             parameter_name=parameters_list[index_parameter]
             netcdf_var = f.createVariable(parameter_name, 'f8', ('longitude','latitude','depth'))
             netcdf_var[:]=parameter_array
+
+if __name__ == "__main__":
+    main()
