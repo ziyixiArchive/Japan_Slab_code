@@ -1,6 +1,4 @@
 import MPI
-using PyCall
-np = pyimport("numpy")
 
 include("../types/types.jl")
 include("../setting/constants.jl")
@@ -8,6 +6,20 @@ include("../utils/readfiles.jl")
 include("../utils/kdtree.jl")
 include("../utils/parse_commandline_ppm.jl")
 
+function array_split_mpi(input_array,num_split,rank)
+    div_result=div(length(input_array),num_split)
+    mod_result=mod(length(input_array),num_split)
+    startindex=nothing
+    endindex=nothing
+    if rank<=mod_result
+        startindex=(div_result+1)*(rank-1)+1
+        endindex=startindex+div_result
+    else 
+        startindex=(div_result+1)*mod_result+div_result*(rank-mod_result-1)+1
+        endindex=startindex+div_result-1
+    end
+    return input_array[startindex:endindex]
+end
 
 
 function generate_profile_points(latnpts, lonnpts, vnpts, lon1, lat1, dep1, lon2, lat2, dep2, comm, latproc, lonproc)
@@ -18,8 +30,8 @@ function generate_profile_points(latnpts, lonnpts, vnpts, lon1, lat1, dep1, lon2
     # get ranges for the three directions
     rank_lat = rank % latproc + 1
     rank_lon = div(rank, latproc) + 1
-    coor_lat = np.array_split(1:latnpts, latproc)[rank_lat]
-    coor_lon = np.array_split(1:lonnpts, lonproc)[rank_lon]
+    coor_lat=array_split_mpi(1:latnpts,latproc,rank_lat)
+    coor_lon=array_split_mpi(1:lonnpts,lonproc,rank_lon)
 
     # init rθϕ_new
     ngll_new_this_rank = length(coor_lat) * length(coor_lon) * vnpts
@@ -115,8 +127,8 @@ function run_interp(command_args::Dict{String,Any}, comm::MPI.Comm)
     misloc_final .= HUGEVAL
 
     model_interp_this_rank = zeros(nmodel, ngll_new_this_rank)
-    # make model_interp_this_rank as -1 to remove the poitns that hasn't been interpolated
-    model_interp_this_rank .= -1
+    # make model_interp_this_rank as 99999 to remove the poitns that hasn't been interpolated
+    model_interp_this_rank .= 99999.0
 
     # * loop each slices of the old mesh
     flag = true

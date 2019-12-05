@@ -77,4 +77,23 @@ EOF
     # plate boundaries
     gmt psxy -Wthick,0/0/255,..- ../gmt_database/Plate_Boundaries/nuvel1_boundaries
     # gmt psxy ../gmt_database/japan_slab_contour -W0.7p -C../gmt_database/cpts/slab.cpt -V
+
+    gmt psxy ../gmt_database/japan_slab_contour -W0.7p -C../gmt_database/cpts/slab.cpt -V
+
+    # plot lines
+    gmt plot -Wthin,magenta << EOF
+>
+138.17 31.61
+131.217001687621,48.834969484317476
+>
+138.17 31.61
+129.0732235894898,48.23860294655729
+>
+131.217001687621,48.834969484317476
+129.0732235894898,48.23860294655729
+>
+133.32129164327156,44.57595616509377
+131.80245577915622,44.15827175261448
+EOF
+
 gmt end
