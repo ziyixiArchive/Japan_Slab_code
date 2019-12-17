@@ -81,11 +81,7 @@ def build_to_plot_traces(obs_ds, syn_ds, trace_length, info_dir):
         tag_syn = syn_ds.waveforms[key].get_waveform_tags()[0]
 
         # here we use syn1_ds, which is not the normal case
-        try:
-            info = info_dict[key]
-        except:
-            print(list(info_dict.keys()))
-            exit()
+        info = info_dict[key]
         obs_st = obs_ds.waveforms[key][tag_obs].copy()
         syn_st = syn_ds.waveforms[key][tag_syn].copy()
 
