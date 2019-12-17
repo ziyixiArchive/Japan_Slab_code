@@ -38,7 +38,7 @@ def getinfo(info_dir, gcmtid):
     s_path = join(info_dir, "traveltime.S.pkl")
     ss_path = join(info_dir, "traveltime.sS.pkl")
     scs_path = join(info_dir, "traveltime.ScS.pkl")
-    result = {
+    result_readin = {
         "gcarc": load_pickle(gcarc_path)[gcmtid],
         "azimuth": load_pickle(azimuth_path)[gcmtid],
         "p": load_pickle(p_path)[gcmtid],
@@ -48,6 +48,19 @@ def getinfo(info_dir, gcmtid):
         "ss": load_pickle(ss_path)[gcmtid],
         "scs": load_pickle(scs_path)[gcmtid]
     }
+    result = {}
+    allkeys = list(load_pickle(gcarc_path)[gcmtid].keys())
+    for each_key in allkeys:
+        result[each_key] = {
+            "gcarc": result_readin["gcarc"][each_key],
+            "azimuth": result_readin["azimuth"][each_key],
+            "p": result_readin["p"][each_key],
+            "pp": result_readin["pp"][each_key],
+            "sp": result_readin["sp"][each_key],
+            "s": result_readin["s"][each_key],
+            "ss": result_readin["ss"][each_key],
+            "scs": result_readin["scs"][each_key]
+        }
     return result
 
 
