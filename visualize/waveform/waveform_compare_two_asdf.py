@@ -111,8 +111,7 @@ def build_plottting_structure(plot_traces, azimuth_width):
 
 @click.command()
 @click.option('--obs_asdf', required=True, type=str)
-@click.option('--syn1_asdf', required=True, type=str)
-@click.option('--syn2_asdf', required=True, type=str)
+@click.option('--syn_asdf', required=True, type=str)
 @click.option('--azimuth_width', required=True, type=int)
 @click.option('--output_pdf', required=True, type=str)
 @click.option('--waves_perpage', required=True, type=int)
