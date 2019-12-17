@@ -141,7 +141,7 @@ def main(obs_asdf, syn_asdf, azimuth_width, output_pdf, waves_perpage, trace_len
     # estimate the total pages
     num_azimuths = 360 // azimuth_width
     count = 0
-    for index_azimuth in tqdm.tqdm(range(num_azimuths)):
+    for index_azimuth in range(num_azimuths):
         azimuth_bin_plot_traces = plotting_structure[index_azimuth]
         num_azimuth_bin_plot_traces = len(azimuth_bin_plot_traces)
         # get num_pages for this azimuth bin
@@ -159,7 +159,7 @@ def main(obs_asdf, syn_asdf, azimuth_width, output_pdf, waves_perpage, trace_len
     pdf = matplotlib.backends.backend_pdf.PdfPages(output_pdf)
     figs = plt.figure()
 
-    t = tqdm(total=count)
+    t = tqdm.tqdm(total=count)
     for index_azimuth in range(num_azimuths):
         # for each azimuth bin
         azimuth_bin_plot_traces = plotting_structure[index_azimuth]
