@@ -48,6 +48,7 @@ def getinfo(info_dir, gcmtid):
         "ss": load_pickle(ss_path)[gcmtid],
         "scs": load_pickle(scs_path)[gcmtid]
     }
+    return result
 
 
 def build_to_plot_traces(obs_ds, syn_ds, trace_length, info_dir):
