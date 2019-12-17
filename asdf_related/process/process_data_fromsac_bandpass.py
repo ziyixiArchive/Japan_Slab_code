@@ -32,7 +32,8 @@ CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB"
                 "JL", "JS", "JX", "LN", "NM", "NX", "QH", "SC", "SD", "SH", "SN", "SX", "TJ", "XJ", "XZ", "YN", "ZJ"]
 
 
-def process_single_event(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
+def process_single_event(min_periods, max_periods, taper_tmin_tmax, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
+    tmin, tmax = map(float, taper_tmin_tmax.split(","))
     # with pyasdf.ASDFDataSet(asdf_filename) as ds:
     ds = pyasdf.ASDFDataSet(asdf_filename, mode="r")
 
@@ -64,8 +65,8 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
                 logger.success(
                     f"[{rank}/{size}] will correct cea dataset according to the cea station orientation information")
 
-        f2 = 1.0 / 400.0
-        f3 = 1.0 / 1.0
+        f2 = 1.0 / tmax
+        f3 = 1.0 / tmin
         f1 = 0.5 * f2
         f4 = 2.0 * f3
         pre_filt = (f1, f2, f3, f4)
@@ -356,6 +357,7 @@ if __name__ == "__main__":
     @click.command()
     @click.option('--min_periods', required=True, type=str, help="min periods in seconds, eg: 10,40")
     @click.option('--max_periods', required=True, type=str, help="max periods in seconds, eg: 120,120")
+    @click.option('--taper_tmin_tmax', required=True, type=str, help="frequency taper tmin(f3) and tmax(f2), eg: 1,400")
     @click.option('--asdf_filename', required=True, type=str, help="asdf raw data file name")
     @click.option('--waveform_length', required=True, type=float, help="waveform length to cut (from event start time)")
     @click.option('--sampling_rate', required=True, type=int, help="sampling rate in HZ")
@@ -364,10 +366,10 @@ if __name__ == "__main__":
     @click.option('--correct_cea/--no-correct_cea', default=False, help="if handling cea dataset")
     @click.option('--cea_correction_file', required=True, type=str, help="the cea correction file")
     @click.option('--paz_directory', required=True, type=str, help="the paz directory, named with gcmtid")
-    def main(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
+    def main(min_periods, max_periods, taper_tmin_tmax, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory):
         min_periods = [float(item) for item in min_periods.split(",")]
         max_periods = [float(item) for item in max_periods.split(",")]
-        process_single_event(min_periods, max_periods, asdf_filename,
+        process_single_event(min_periods, max_periods, taper_tmin_tmax, asdf_filename,
                              waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file, paz_directory)
 
     main()

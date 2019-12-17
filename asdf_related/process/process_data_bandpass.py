@@ -12,7 +12,8 @@ from obspy.geodetics.base import gps2dist_azimuth
 from pyasdf import ASDFDataSet
 import pandas as pd
 from mpi4py import MPI
-
+import io
+from obspy.signal.invsim import simulate_seismometer
 
 # fix a bug in intel
 import mpi4py
@@ -32,8 +33,9 @@ CEA_NETWORKS = ["AH", "BJ", "BU", "CQ", "FJ", "GD", "GS", "GX", "GZ", "HA", "HB"
                 "JL", "JS", "JX", "LN", "NM", "NX", "QH", "SC", "SD", "SH", "SN", "SX", "TJ", "XJ", "XZ", "YN", "ZJ"]
 
 
-def process_single_event(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
+def process_single_event(min_periods, max_periods, taper_tmin_tmax, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
     # with pyasdf.ASDFDataSet(asdf_filename) as ds:
+    tmin, tmax = map(float, taper_tmin_tmax.split(","))
     with pyasdf.ASDFDataSet(asdf_filename, mode="r") as ds:
 
         # load cea correction file
@@ -64,8 +66,8 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
                     logger.success(
                         f"[{rank}/{size}] will correct cea dataset according to the cea station orientation information")
 
-            f2 = 1.0 / 400.0
-            f3 = 1.0 / 1.0
+            f2 = 1.0 / tmax
+            f3 = 1.0 / tmin
             f1 = 0.5 * f2
             f4 = 2.0 * f3
             pre_filt = (f1, f2, f3, f4)
@@ -117,8 +119,10 @@ def process_single_event(min_periods, max_periods, asdf_filename, waveform_lengt
                 st.detrend("linear")
                 st.taper(max_percentage=0.05, type="hann")
 
-                st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
-                                   taper=False, inventory=inv, water_level=None)
+                # st.remove_response(output="DISP", pre_filt=pre_filt, zero_mean=False,
+                #                    taper=False, inventory=inv, water_level=None)
+                # here we should use PZ files to remove the response.
+                st = remove_response(st, pre_filt=pre_filt, inv=inv)
 
                 # the same of removing response with sac
                 st.detrend("demean")
@@ -225,6 +229,19 @@ def check_st_numberlap(st, inv):
             return -1
 
 
+def remove_response(st, pre_filt=None, inv=None):
+    for index, item in enumerate(st):
+        pz_vir_file = io.StringIO()
+        inv_tr = inv.select(channel=item.stats.channel)
+        inv_tr.write(pz_vir_file, format="SACPZ")
+        pz_vir_file.seek(0)
+        obspy.io.sac.sacpz.attach_paz(item, pz_vir_file)
+        data = simulate_seismometer(
+            item.data, item.stats.sampling_rate, paz_remove=item.stats.paz, water_level=6e9, zero_mean=False, taper=False, pre_filt=pre_filt, sacsim=True)
+        st[index].data = data
+    return st
+
+
 def modify_time(time_str):
     if(type(time_str) != str):
         return obspy.UTCDateTime("2099-09-01")
@@ -328,6 +345,7 @@ if __name__ == "__main__":
     @click.command()
     @click.option('--min_periods', required=True, type=str, help="min periods in seconds, eg: 10,40")
     @click.option('--max_periods', required=True, type=str, help="max periods in seconds, eg: 120,120")
+    @click.option('--taper_tmin_tmax', required=True, type=str, help="frequency taper tmin(f3) and tmax(f2), eg: 1,400")
     @click.option('--asdf_filename', required=True, type=str, help="asdf raw data file name")
     @click.option('--waveform_length', required=True, type=float, help="waveform length to cut (from event start time)")
     @click.option('--sampling_rate', required=True, type=int, help="sampling rate in HZ")
@@ -335,10 +353,10 @@ if __name__ == "__main__":
     @click.option('--logfile', required=True, type=str, help="the logging file")
     @click.option('--correct_cea/--no-correct_cea', default=False, help="if handling cea dataset")
     @click.option('--cea_correction_file', required=False, type=str, help="the cea correction file")
-    def main(min_periods, max_periods, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
+    def main(min_periods, max_periods, taper_tmin_tmax, asdf_filename, waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file):
         min_periods = [float(item) for item in min_periods.split(",")]
         max_periods = [float(item) for item in max_periods.split(",")]
-        process_single_event(min_periods, max_periods, asdf_filename,
+        process_single_event(min_periods, max_periods, taper_tmin_tmax, asdf_filename,
                              waveform_length, sampling_rate, output_directory, logfile, correct_cea, cea_correction_file)
 
     main()
