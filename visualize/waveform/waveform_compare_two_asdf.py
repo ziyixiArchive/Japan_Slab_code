@@ -91,12 +91,12 @@ def build_to_plot_traces(obs_ds, syn_ds, trace_length, info_dir):
         syn_st.trim(syn_st[0].stats.starttime,
                     syn_st[0].stats.starttime+trace_length)
 
-        obs_r = obs_st.select(component="*R")
-        obs_t = obs_st.select(component="*T")
-        obs_z = obs_st.select(component="*Z")
-        syn_r = syn_st.select(component="*R")
-        syn_t = syn_st.select(component="*T")
-        syn_z = syn_st.select(component="*Z")
+        obs_r = obs_st.select(component="*R")[0]
+        obs_t = obs_st.select(component="*T")[0]
+        obs_z = obs_st.select(component="*Z")[0]
+        syn_r = syn_st.select(component="*R")[0]
+        syn_t = syn_st.select(component="*T")[0]
+        syn_z = syn_st.select(component="*Z")[0]
 
         result[key] = to_plot_trace(
             obs_z, syn_z, obs_r, syn_r, obs_t, syn_t, info)
